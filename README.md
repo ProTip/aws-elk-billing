@@ -28,7 +28,7 @@ Ensure mod_proxy, mod_proxy_http, and mod_ssl are enabled.  Give the example con
 #### Install Kibana
 This is as easy as extracting the release into the document root specified in `kibana-vhost.conf`: https://github.com/elasticsearch/kibana/releases . Edit `config.js` and update the es location to be `https://example.com:443/es`, replacing `example.com` with your domain name.  The path `/es` will be proxied to elasticsearch on port `9200`.
 #### Import Data
-Download all of your detailed billing files into `some directory`.  Build the golang program or grab the provided linux amd64 binary release: https://github.com/ProTip/aws-elk-billing/releases .  You're ready to import. Change to `some directory` and bring the aws-billing executable in:
+Download all of your detailed billing files into `some directory` and extract.  Build the golang program or grab the provided linux amd64 binary release: https://github.com/ProTip/aws-elk-billing/releases .  You're ready to import. Change to `some directory` and bring the aws-billing executable in:
 ````
 ls *.csv | xargs -I'{}' ./aws-billing --file {} --concurrency 1
 ````
