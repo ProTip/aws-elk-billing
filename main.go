@@ -292,7 +292,6 @@ func PublishRecord(in chan []byte) {
 		panic(err.Error())
 	}
 	for record := range in {
-		continue
 		_, err = con.Write(record)
 		if err != nil {
 			panic(err.Error())
