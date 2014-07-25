@@ -1,5 +1,5 @@
 # aws-elk-billing
- 
+![Alt text](/../screenshots/screenshots/aws-costing-overview.png?raw=true "Overview")
 ## Overview
  
  aws-elk-billing is a combination of configuration snippets and tools to assist with indexing AWS programatic billing access files(CSV's) and visualizing the data using Kibana.
