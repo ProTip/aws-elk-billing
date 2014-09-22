@@ -33,3 +33,5 @@ Download all of your detailed billing files into `some directory` and extract.  
 ls *.csv | xargs -I'{}' ./aws-billing --file {} --concurrency 1
 ````
 Setting concurrency higher will use more cores but most likely logstash/elasticsearch will be your bottleneck.  This can take a while; the program will print the number of records it has processed every 10k records.
+#### Import the kibana Dashboard
+Open kibana in your browser, go the the folder icon at the top -> Advanced -> Local File and select the file "kibana-dashboard.json"
