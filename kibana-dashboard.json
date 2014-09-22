@@ -1,0 +1,629 @@
+{
+  "title": "AWS-billing",
+  "services": {
+    "query": {
+      "list": {
+        "0": {
+          "id": 0,
+          "color": "#7EB26D",
+          "alias": "",
+          "pin": false,
+          "type": "lucene",
+          "enable": true,
+          "query": "ProductName:\"Amazon CloudFront\""
+        },
+        "1": {
+          "id": 1,
+          "color": "#CFFAFF",
+          "alias": "",
+          "pin": false,
+          "type": "lucene",
+          "enable": true,
+          "query": "ProductName:\"Amazon Redshift\""
+        },
+        "2": {
+          "id": 2,
+          "color": "#EAB839",
+          "alias": "",
+          "pin": false,
+          "type": "lucene",
+          "enable": true,
+          "query": "ProductName:\"Amazon Elastic Compute Cloud\""
+        },
+        "3": {
+          "id": 3,
+          "color": "#EF843C",
+          "alias": "",
+          "pin": false,
+          "type": "lucene",
+          "enable": true,
+          "query": "ProductName:\"Amazon DynamoDB\""
+        },
+        "4": {
+          "id": 4,
+          "color": "#E24D42",
+          "alias": "",
+          "pin": false,
+          "type": "lucene",
+          "enable": true,
+          "query": "ProductName:\"Amazon Simple Queue Service\""
+        },
+        "5": {
+          "id": 5,
+          "color": "#1F78C1",
+          "alias": "",
+          "pin": false,
+          "type": "lucene",
+          "enable": true,
+          "query": "ProductName:\"Amazon Simple Storage Service\""
+        },
+        "6": {
+          "id": 6,
+          "color": "#BA43A9",
+          "alias": "",
+          "pin": false,
+          "type": "lucene",
+          "enable": true,
+          "query": "ProductName:\"AWS Support (Business)\""
+        },
+        "7": {
+          "id": 7,
+          "color": "#705DA0",
+          "alias": "",
+          "pin": false,
+          "type": "lucene",
+          "enable": true,
+          "query": "ProductName:\"Amazon CloudSearch\""
+        },
+        "8": {
+          "id": 8,
+          "color": "#052B51",
+          "alias": "",
+          "pin": false,
+          "type": "lucene",
+          "enable": true,
+          "query": "ProductName:\"Amazon Elastic MapReduce\""
+        },
+        "9": {
+          "id": 9,
+          "color": "#F9E2D2",
+          "alias": "",
+          "pin": false,
+          "type": "lucene",
+          "enable": true,
+          "query": "ProductName:\"Amazon RDS Service\""
+        },
+        "10": {
+          "id": 10,
+          "color": "#447EBC",
+          "alias": "",
+          "pin": false,
+          "type": "lucene",
+          "enable": true,
+          "query": "ProductName:\"Amazon Route 53\""
+        },
+        "11": {
+          "id": 11,
+          "color": "#C15C17",
+          "alias": "",
+          "pin": false,
+          "type": "lucene",
+          "enable": true,
+          "query": "ProductName:\"Amazon Simple Email Service\""
+        },
+        "12": {
+          "id": 12,
+          "color": "#890F02",
+          "alias": "",
+          "pin": false,
+          "type": "lucene",
+          "enable": true,
+          "query": "ProductName:\"Amazon ElastiCache\""
+        },
+        "13": {
+          "id": 13,
+          "color": "#0A437C",
+          "alias": "",
+          "pin": false,
+          "type": "lucene",
+          "enable": true,
+          "query": "ProductName:\"Amazon Kinesis\""
+        },
+        "14": {
+          "id": 14,
+          "color": "#6D1F62",
+          "alias": "",
+          "pin": false,
+          "type": "lucene",
+          "enable": true,
+          "query": "ProductName:\"Amazon SimpleDB\""
+        },
+        "15": {
+          "id": 15,
+          "color": "#584477",
+          "alias": "",
+          "pin": false,
+          "type": "lucene",
+          "enable": true,
+          "query": "ProductName:\"Amazon Simple Notification Service\""
+        },
+        "16": {
+          "id": 16,
+          "color": "#B7DBAB",
+          "alias": "",
+          "pin": false,
+          "type": "lucene",
+          "enable": true,
+          "query": "ProductName:\"Amazon Glacier\""
+        }
+      },
+      "ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ]
+    },
+    "filter": {
+      "list": {
+        "0": {
+          "type": "time",
+          "field": "@timestamp",
+          "from": "now-30d",
+          "to": "now",
+          "mandate": "must",
+          "active": true,
+          "alias": "",
+          "id": 0
+        },
+        "1": {
+          "type": "field",
+          "field": "_type",
+          "query": "\"aws_billing_hourly\"",
+          "mandate": "must",
+          "active": true,
+          "alias": "",
+          "id": 1
+        }
+      },
+      "ids": [
+        0,
+        1
+      ]
+    }
+  },
+  "rows": [
+    {
+      "title": "Errors",
+      "height": "450px",
+      "editable": true,
+      "collapse": false,
+      "collapsable": true,
+      "panels": [
+        {
+          "span": 12,
+          "editable": true,
+          "group": [
+            "default"
+          ],
+          "type": "histogram",
+          "mode": "total",
+          "time_field": "@timestamp",
+          "value_field": "Cost",
+          "auto_int": false,
+          "resolution": 300,
+          "interval": "1d",
+          "fill": 3,
+          "linewidth": 3,
+          "timezone": "browser",
+          "spyable": true,
+          "zoomlinks": true,
+          "bars": true,
+          "stack": true,
+          "points": false,
+          "lines": false,
+          "legend": true,
+          "x-axis": true,
+          "y-axis": true,
+          "percentage": false,
+          "interactive": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16
+            ]
+          },
+          "title": "Events over time",
+          "intervals": [
+            "auto",
+            "1s",
+            "1m",
+            "5m",
+            "10m",
+            "30m",
+            "1h",
+            "3h",
+            "12h",
+            "1d",
+            "1w",
+            "1M",
+            "1y"
+          ],
+          "options": true,
+          "tooltip": {
+            "value_type": "cumulative",
+            "query_as_alias": true
+          },
+          "scale": 1,
+          "y_format": "none",
+          "grid": {
+            "max": null,
+            "min": 0
+          },
+          "annotate": {
+            "enable": false,
+            "query": "*",
+            "size": 20,
+            "field": "_type",
+            "sort": [
+              "_score",
+              "desc"
+            ]
+          },
+          "pointradius": 5,
+          "show_query": true,
+          "legend_counts": true,
+          "zerofill": true,
+          "derivative": false
+        }
+      ],
+      "notice": false
+    },
+    {
+      "title": "More Graphs",
+      "height": "100px",
+      "editable": true,
+      "collapse": false,
+      "collapsable": true,
+      "panels": [
+        {
+          "error": false,
+          "span": 12,
+          "editable": true,
+          "type": "text",
+          "loadingEditor": false,
+          "mode": "markdown",
+          "content": "[Trusted Advisor (AWS saving recommendation service) ](https://aws.amazon.com/support/trustedadvisor)\n-------------------",
+          "style": {
+            "font-size": "14pt"
+          },
+          "title": "To try to save money"
+        }
+      ],
+      "notice": false
+    },
+    {
+      "title": "Graph",
+      "height": "350px",
+      "editable": true,
+      "collapse": false,
+      "collapsable": true,
+      "panels": [
+        {
+          "error": false,
+          "span": 4,
+          "editable": true,
+          "type": "stats",
+          "loadingEditor": false,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16
+            ]
+          },
+          "style": {
+            "font-size": "24pt"
+          },
+          "format": "money",
+          "mode": "total",
+          "display_breakdown": "yes",
+          "sort_field": "",
+          "sort_reverse": false,
+          "label_name": "Product",
+          "value_name": "Value",
+          "spyable": true,
+          "show": {
+            "count": false,
+            "min": false,
+            "max": false,
+            "mean": false,
+            "std_deviation": false,
+            "sum_of_squares": false,
+            "total": true,
+            "variance": false
+          },
+          "field": "Cost",
+          "unit": "USD ($)",
+          "title": "Total cost"
+        },
+        {
+          "error": false,
+          "span": 2,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "Tags.user_env",
+          "exclude": [],
+          "missing": false,
+          "other": false,
+          "size": 10,
+          "order": "total",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": false,
+          "labels": true,
+          "arrangement": "vertical",
+          "chart": "pie",
+          "counter_pos": "below",
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16
+            ]
+          },
+          "tmode": "terms_stats",
+          "tstat": "total",
+          "valuefield": "Cost",
+          "title": "Cost per environments"
+        },
+        {
+          "error": false,
+          "span": 3,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "Tags.user_service",
+          "exclude": [],
+          "missing": true,
+          "other": false,
+          "size": 100,
+          "order": "total",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": false,
+          "labels": true,
+          "arrangement": "vertical",
+          "chart": "pie",
+          "counter_pos": "below",
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16
+            ]
+          },
+          "tmode": "terms_stats",
+          "tstat": "total",
+          "valuefield": "Cost",
+          "title": "Cost per service"
+        },
+        {
+          "error": false,
+          "span": 3,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "ProductName",
+          "exclude": [],
+          "missing": false,
+          "other": false,
+          "size": 100,
+          "order": "total",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": false,
+          "labels": true,
+          "arrangement": "vertical",
+          "chart": "pie",
+          "counter_pos": "below",
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16
+            ]
+          },
+          "tmode": "terms_stats",
+          "tstat": "total",
+          "valuefield": "Cost",
+          "title": "AWS products"
+        }
+      ],
+      "notice": false
+    }
+  ],
+  "editable": true,
+  "failover": false,
+  "index": {
+    "interval": "day",
+    "pattern": "[aws-billing-]YYYY.MM",
+    "default": "NO_TIME_FILTER_OR_INDEX_PATTERN_NOT_MATCHED",
+    "warm_fields": true
+  },
+  "style": "dark",
+  "panel_hints": false,
+  "pulldowns": [
+    {
+      "type": "query",
+      "collapse": true,
+      "notice": false,
+      "query": "*",
+      "pinned": true,
+      "history": [
+        "ProductName:\"Amazon Glacier\"",
+        "ProductName:\"Amazon Simple Notification Service\"",
+        "ProductName:\"Amazon SimpleDB\"",
+        "ProductName:\"Amazon Kinesis\"",
+        "ProductName:\"Amazon ElastiCache\"",
+        "ProductName:\"Amazon Simple Email Service\"",
+        "ProductName:\"Amazon Route 53\"",
+        "ProductName:\"Amazon RDS Service\"",
+        "ProductName:\"Amazon Elastic MapReduce\"",
+        "ProductName:\"Amazon CloudSearch\""
+      ],
+      "remember": 10,
+      "enable": true
+    },
+    {
+      "type": "filtering",
+      "collapse": true,
+      "notice": false,
+      "enable": true
+    }
+  ],
+  "nav": [
+    {
+      "type": "timepicker",
+      "collapse": false,
+      "notice": false,
+      "status": "Stable",
+      "time_options": [
+        "1d",
+        "2d",
+        "7d",
+        "15d",
+        "30d",
+        "60d",
+        "90d"
+      ],
+      "refresh_intervals": [
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ],
+      "timefield": "@timestamp",
+      "now": true,
+      "filter_id": 0,
+      "enable": true
+    }
+  ],
+  "loader": {
+    "save_gist": false,
+    "save_elasticsearch": true,
+    "save_local": true,
+    "save_default": true,
+    "save_temp": true,
+    "save_temp_ttl_enable": true,
+    "save_temp_ttl": "30d",
+    "load_gist": true,
+    "load_elasticsearch": true,
+    "load_elasticsearch_size": 20,
+    "load_local": true,
+    "hide": false
+  },
+  "refresh": false
+}
