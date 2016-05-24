@@ -6,28 +6,42 @@
   "mappings" : {
     "_default_" : {
        "_all" : {"enabled" : true},
-       "dynamic_templates" : [ {
-         "string_fields" : {
-           "match" : "*",
-           "match_mapping_type" : "string",
-           "mapping" : {
-             "type" : "string", "index" : "analyzed", "omit_norms" : true,
-               "fields" : {
-                 "raw" : {"type": "string", "index" : "not_analyzed", "ignore_above" : 256}
-               }
-           }
-         }
-       } ],
+       "dynamic_templates" : [
+        { "double_fields" : {
+            "match" : "Cost",
+            "mapping" : {
+                "type" : "double"
+            }
+        }},
+        { "string_fields" : {
+            "match" : "*",
+            "match_mapping_type" : "string",
+            "mapping" : {
+                "type" : "string",
+                "index" : "analyzed",
+                "omit_norms" : true,
+                "fields" : {
+                    "raw" : {
+                        "type": "string",
+                        "index" : "not_analyzed",
+                        "ignore_above" : 256
+                    }
+                }
+            }
+        }}
+       ],
        "properties" : {
-         "@version": { "type": "string", "index": "not_analyzed" },
-         "geoip"  : {
-           "type" : "object",
-             "dynamic": true,
-             "path": "full",
-             "properties" : {
-               "location" : { "type" : "geo_point" }
-             }
-         }
+            "@version": {
+                "type": "string",
+                "index": "not_analyzed"
+            },
+            "geoip"  : {
+                "type" : "object",
+                "dynamic": true,
+                "properties" : {
+                    "location" : { "type" : "geo_point" }
+                }
+            }
        }
     }
   }

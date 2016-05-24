@@ -1,0 +1,14 @@
+*.html
+#Use run.py for testing purpose only
+run.py
+.DS_Store
+*.swp
+.vagrant
+*.pyc
+.project
+*.xml
+*.swo
+run.py
+*.ipynb
+run_tests.py
+*.out

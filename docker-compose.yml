@@ -1,0 +1,33 @@
+#Run docker container in the background
+#docker-compose up -d
+version: '2'
+services:
+  aws-elk-billing:
+    build: .
+    container_name: aws-elk-billing
+    environment:
+    - ENV=debug
+    - DEBIAN_FRONTEND=noninteractive
+    - TERM=xterm
+    volumes:
+    - .:/aws-elk-billing
+    depends_on:
+    - kibana
+    - elasticsearch
+    links:
+    - elasticsearch:db.elasticsearch.priceboard.in
+
+  kibana:
+    image: droidlabour/kibana:4.5
+    ports:
+    - 5601:5601
+    links:
+    - elasticsearch:db.elasticsearch.priceboard.in
+    depends_on:
+    - elasticsearch
+
+  elasticsearch:
+    image: droidlabour/elasticsearch:2.3.3
+    ports:
+    - 9200:9200
+    - 9300:9300
