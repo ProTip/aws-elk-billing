@@ -3,8 +3,7 @@
 version: '2'
 services:
   aws-elk-billing:
-    build: .
-    container_name: aws-elk-billing
+    image: awselkbilling_aws-elk-billing
     environment:
     - ENV=debug
     - DEBIAN_FRONTEND=noninteractive
