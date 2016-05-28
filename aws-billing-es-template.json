@@ -22,8 +22,6 @@
          "@version": { "type": "string", "index": "not_analyzed" },
 	 "lineItem/BlendedCost":{"type":"float"},
 	 "lineItem/UnblendedCost":{"type":"float"}
-            }
-         }
        }
     }
   }

@@ -27,7 +27,7 @@ var (
 
 	// Flag variables
 	file            = flag.String("file", "billing_report_2016-05.csv", "CSV billing file to load.")
-	logstashAddress = flag.String("logstash-address", "localhost:5140", "Address and port for the logstash tcp listener.")
+	logstashAddress = flag.String("logstash-address", "db.logstash.priceboard.in:5140", "Address and port for the logstash tcp listener.")
 	concurrency     = flag.Int("concurrency", 2, "Number of cores to use.")
 	//accountsFile    = flag.String("accounts-file", "aws-cost-allocation-2014-06.csv", "CSV file containing LinkedAccountId and account LinkedAccountName")
 )

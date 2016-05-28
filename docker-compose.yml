@@ -3,7 +3,7 @@
 version: '2'
 services:
   aws-elk-billing:
-    image: awselkbilling_aws-elk-billing
+    build : .
     environment:
     - ENV=debug
     - DEBIAN_FRONTEND=noninteractive
@@ -12,9 +12,27 @@ services:
     - .:/aws-elk-billing
     depends_on:
     - kibana
+    - logstash
     - elasticsearch
     links:
+    - logstash:db.logstash.priceboard.in
     - elasticsearch:db.elasticsearch.priceboard.in
+    extends:
+     file: ../docker-compose.aws.prod-key.yml
+     service: env_var
+    command: "python /aws-elk-billing/s3_csv_grab.py"
+
+  logstash:
+    image: droidlabour/logstash:2.3
+    ports:
+    - 5140:5140
+    links:
+    - elasticsearch:db.elasticsearch.priceboard.in
+    depends_on:
+    - elasticsearch
+    volumes:
+    - ./logstash.conf:/logstash.conf
+    command: "logstash -f /logstash.conf"
 
   kibana:
     image: droidlabour/kibana:4.5

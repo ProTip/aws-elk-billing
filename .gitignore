@@ -12,3 +12,5 @@ run.py
 *.ipynb
 run_tests.py
 *.out
+*.csv
+*.gz
