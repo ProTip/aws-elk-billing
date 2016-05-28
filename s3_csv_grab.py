@@ -1,4 +1,7 @@
 import boto3
+import time
+import socket
+import sys
 import datetime
 from dateutil.relativedelta import relativedelta
 import subprocess
@@ -44,6 +47,66 @@ print("Extracting latest csv file")
 process_gunzip = subprocess.Popen(['gunzip -v '+ local_gz_filename],shell=True)
 print('Done')
 '''
+
+elasticsearch_socket	= socket.socket()
+logstash_socket			= socket.socket()
+kibana_socket			= socket.socket()
+
+for _ in range(5):
+	try:
+		print 'Checking if Elasticsearch container has started to listen to 9200'
+		elasticsearch_socket.connect(('db.elasticsearch.priceboard.in', 9200))
+		break
+	except Exception as e:
+		print("Something's wrong with Elasticsearch. Exception is %s" % (e))
+		print 'I will retry after 4 seconds'
+		time.sleep(4)
+
+for _ in range(5):
+	try:
+		print 'Checking if Logstash container has started to listen to 5140'
+		logstash_socket.connect(('db.logstash.priceboard.in', 5140))
+		break
+	except Exception as e:
+		print("Something's wrong with Logstash. Exception is %s" % (e))
+		print 'I will retry after 4 seconds'
+		time.sleep(4)
+
+for _ in range(5):
+	try:
+		print 'Checking if Kibana container has started to listen to 5160'
+		kibana_socket.connect(('kibana.priceboard.in', 5160))
+		break
+	except Exception as e:
+		print("Something's wrong with Kibana. Exception is %s" % (e))
+		print 'I will retry after 4 seconds'
+		time.sleep(4)
+
+elasticsearch_socket.close()
+logstash_socket.close()
+kibana_socket.close()
+
+status = subprocess.Popen(['curl -XDELETE db.elasticsearch.priceboard.in:9200/aws-billing*'], shell=True)
+if status.wait() != 0:
+	print 'Something went wrong while deleting earlier aws-billing* indice'
+	print 'I think there was no aws-billing* indice'
+	sys.exit(1)
+else:
+	print 'aws-billing* indice deleted'
+
+status = subprocess.Popen(['curl -XPUT db.elasticsearch.priceboard.in:9200/_template/aws_billing -d "`cat /aws-elk-billing/aws-billing-es-template.json`"'], shell=True)
+if status.wait() != 0:
+	print 'Something went wrong while creating mapping index'
+	sys.exit(1)
+else:
+	print 'ES mapping created'
+
+status = subprocess.Popen(['go run /aws-elk-billing/main.go --file /aws-elk-billing/billing_report_2016-05.csv'], shell=True)
+if status.wait() != 0:
+	print 'Something went wrong while getting the file reference or while talking with logstash'
+	sys.exit(1)
+else:
+	print 'AWS Billing report sucessfully parsed and indexed in Elasticsearch via Logstash :)'
 
 while True:
 	pass

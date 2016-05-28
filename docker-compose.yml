@@ -15,6 +15,7 @@ services:
     - logstash
     - elasticsearch
     links:
+    - kibana:kibana.priceboard.in
     - logstash:db.logstash.priceboard.in
     - elasticsearch:db.elasticsearch.priceboard.in
     extends:
