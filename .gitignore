@@ -12,3 +12,4 @@ run.py
 *.ipynb
 run_tests.py
 *.out
+main
