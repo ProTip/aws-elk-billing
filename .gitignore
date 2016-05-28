@@ -13,3 +13,5 @@ run.py
 run_tests.py
 *.out
 main
+*.csv
+*.gz
