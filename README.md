@@ -2,35 +2,57 @@
 ![Alt text](/../screenshots/screenshots/aws-costing-overview.png?raw=true "Overview")
 ## Overview
  
- aws-elk-billing is a combination of configuration snippets and tools to assist with indexing AWS programatic billing access files(CSV's) and visualizing the data using Kibana.
+ aws-elk-billing is a combination of configuration snippets and tools to assist with indexing AWS programatic billing access files(CSV's) and visualizing the data using Kibana. The entire process from getting data to visualization can be made automated with the docker architecture and some modification in respective script files.
 
 ### Primary Components
+Task | Files or Process
+------------ | -------------
+Building the Docker Architecture and Starting all process | Dockerfile, docker-compose.yml
+Configuration of Logstash | `logstash.conf`
+Elasticsearch indexing template | `aws-billing-es-template.json`
+Parsing the aws-billing CSV's and send them to logstash as JSON | `main.go`
+Automated download latest zipped file from S3 bucket and extract the billing\_report\_csv file | `s3\_csv\_grab.py`
+Kibana Dashboard Export in json format to get you started| `kibana_dashboard.json`
 
- * Logstash config
- * Elasticsearch index template
- * `aws-billing` The command line tool to parse billing CSV's and send them to logstash as JSON
- * Kibana dashboards in JSON format to get you started
+### The Base Architecture
+There are Four Docker instances running throughout the entire visualization. 
+
+1. Ealasticsearch Docker (image source: droidlabour/elasticsearch:2.3.3)
+2. Kibana Docker (image source: droidlabour/kibana:4.5)
+3. Logstash Docker (image source: droidlabour/logstash:2.3)
+4. Aws-elk-billing Docker (localy build  image)
+
+Each name is self-explanatory about the primary process they are running. If you want to find more about what and how this dockers are running go to the repository (https://github.com/PriceBoardIn) and you will find all the `Dockerfile` and `docker-compose.yml` files. Finally the Aws-elk-billing Docker takes care of all the othe Three docker running and this is the only docker you might want to modify (or might not also).
+
+PS: Don't worry about the system being heavy with so many dockers, they run only one or two process So, its like 4 application running. But it has many benifits (docker user will know :p)
 
 ## Getting Started
+Clone the Repository and make sure that no process is listning to the ports used by all these dockers.
+Ports | Process
+------------ | -------------
+9200, 9300 | Elasticsearch
+5160 | Kibana
+5140 | Logstash
 
-#### Install logstash
-This is not an elasticsearch tutorial so we'll be using the embedded elasticsearch option.  In fact, I use this as well because it's easy and not a critical component.  I would recommend using the APT or YUM repositories if that suites your distro: http://logstash.net/docs/1.4.2/repositories .
 
-Place the provided `logstash.conf` in the appropriate location(e.g. `/etc/logstash/conf.d/logstash.conf`).  Alternatively, merge the relevant bits into your logstash configuration.
+#### Run Docker
+The entire process is automated through scripts and docker. All the components would be downloaded automatically inside your docker
 
-Add the provided elasticsearch index template `aws-billing-es-template.json`:
-````
-curl -XPUT localhost:9200/_template/aws_billing -d "`cat aws-billing-es-template.json`"
-````
-This template mostly mirrors the logstash template but matches the aws-billing indexes.  Restart logstash.
-#### Install apache2
-Ensure mod_proxy, mod_proxy_http, and mod_ssl are enabled.  Give the example config `kibana-vhost.conf` a go, replacing `example.com` with your host name and `/home/www/kibana` with your prefered document root.
-#### Install Kibana
-This is as easy as extracting the release into the document root specified in `kibana-vhost.conf`: https://github.com/elasticsearch/kibana/releases . Edit `config.js` and update the es location to be `https://example.com:443/es`, replacing `example.com` with your domain name.  The path `/es` will be proxied to elasticsearch on port `9200`.
-#### Import Data
-Download all of your detailed billing files into `some directory` and extract.  Build the golang program or grab the provided linux amd64 binary release: https://github.com/ProTip/aws-elk-billing/releases .  You're ready to import. Change to `some directory` and bring the aws-billing executable in:
-aws-billing binary is not the one from aws-billing in npm repo. it's the main.go build version only.
-````
-ls *.csv | xargs -I'{}' ./aws-billing --file {} --concurrency 1
-````
-Setting concurrency higher will use more cores but most likely logstash/elasticsearch will be your bottleneck.  This can take a while; the program will print the number of records it has processed every 10k records.
+First go to the repository root directory.
+Run `sudo docker-compose build .`
+This command in the root directory of the Repository will start building the `Aws-elk-billing Docker` (4th) docker and this will make sure all the other Three dockers are build correctly.
+
+Then Run `sudo docker-compose up -d`
+To run all the dockers as demon process.
+PS: remove the -d flag if you want to run as foreground process and get the running logs.
+
+This process wil take sometime (downloading indexing and everything) and after that you can see `kibana` at `localhost:5601`
+
+I have provided a Demo Dashboard along with some visualization. Check it out and use it as referenec to build your own dashboard and visualization according to your need.
+
+After you are done just do `sudo docker-compose down` to stop everything.
+
+## Known Issues
+
+* It will take time depending on your system and data, if you do excess querries before the docker process is done, it might crash. In that case jsut stop the docker with `sudo docker-compose down` and run again. You might also want to see the logs to know whats hapenning to escape this.
+* The mapping template can be made stronger, that being said if the mapping is edited and something is not working the code will not throw error (in logs it will!), rather it will take up previous data (or something silly)
