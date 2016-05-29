@@ -17,9 +17,9 @@ Kibana Dashboard Export in json format to get you started| `kibana_dashboard.jso
 ### The Base Architecture
 There are Four Docker instances running throughout the entire visualization. 
 
-1. Ealasticsearch Docker (image source: droidlabour/elasticsearch:2.3.3)
-2. Kibana Docker (image source: droidlabour/kibana:4.5)
-3. Logstash Docker (image source: droidlabour/logstash:2.3)
+1. Ealasticsearch Docker (image source: https://hub.docker.com/r/droidlabour/elasticsearch)
+2. Kibana Docker (image source: https://hub.docker.com/r/droidlabour/kibana)
+3. Logstash Docker (image source: https://hub.docker.com/r/droidlabour/logstash)
 4. Aws-elk-billing Docker (localy build  image)
 
 Each name is self-explanatory about the primary process they are running. If you want to find more about what and how this dockers are running go to the repository (https://github.com/PriceBoardIn) and you will find all the `Dockerfile` and `docker-compose.yml` files. Finally the Aws-elk-billing Docker takes care of all the othe Three docker running and this is the only docker you might want to modify (or might not also).
@@ -28,6 +28,7 @@ PS: Don't worry about the system being heavy with so many dockers, they run only
 
 ## Getting Started
 Clone the Repository and make sure that no process is listning to the ports used by all these dockers.
+
 Ports | Process
 ------------ | -------------
 9200, 9300 | Elasticsearch
@@ -39,6 +40,7 @@ Ports | Process
 The entire process is automated through scripts and docker. All the components would be downloaded automatically inside your docker
 
 First go to the repository root directory.
+
 Run `sudo docker-compose build .`
 This command in the root directory of the Repository will start building the `Aws-elk-billing Docker` (4th) docker and this will make sure all the other Three dockers are build correctly.
 
