@@ -12,12 +12,14 @@ Error Handling
 User Interface
 '''
 
-'''
 # you must provide your credentials in the recomanded way, here we are passing it by ENV variables
 s3 = boto3.client('s3')
 
 # give the correct bucket name for your s3 billing bucket
 bucketname = 'priceboard-billing'
+
+#timestamp
+timestamp = time.strftime('%H_%M')
 
 # generate the aws s3 directory format for getting the correct json file
 generate_monthly_dir_name = datetime.date.today().strftime('%Y%m01')+'-'+\
@@ -37,7 +39,7 @@ latest_gzip_filename = content['reportKeys'][0]
 f.close()
 
 # the local filename formated for compatibility with the go lang code
-local_gz_filename = 'billing_report_'+datetime.date.today().strftime('%Y-%m')+'.csv.gz'
+local_gz_filename = 'billing_report_'+timestamp+'_'+datetime.date.today().strftime('%Y-%m')+'.csv.gz'
 
 # downloading the zipfile from s3
 s3.download_file(bucketname,latest_gzip_filename,local_gz_filename)
@@ -46,7 +48,7 @@ s3.download_file(bucketname,latest_gzip_filename,local_gz_filename)
 print("Extracting latest csv file")
 process_gunzip = subprocess.Popen(['gunzip -v '+ local_gz_filename],shell=True)
 print('Done')
-'''
+
 
 elasticsearch_socket	= socket.socket()
 logstash_socket			= socket.socket()
@@ -101,7 +103,7 @@ if status.wait() != 0:
 else:
 	print 'ES mapping created'
 
-status = subprocess.Popen(['go run /aws-elk-billing/main.go --file /aws-elk-billing/billing_report_2016-05.csv'], shell=True)
+status = subprocess.Popen(['go run /aws-elk-billing/main.go --file /aws-elk-billing/billing_report_'+timestamp+'_2016-05.csv'], shell=True)
 if status.wait() != 0:
 	print 'Something went wrong while getting the file reference or while talking with logstash'
 	sys.exit(1)

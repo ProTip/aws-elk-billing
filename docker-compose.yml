@@ -21,7 +21,7 @@ services:
     extends:
      file: ../docker-compose.aws.prod-key.yml
      service: env_var
-    command: "python /aws-elk-billing/s3_csv_grab.py"
+    command: bash -c "python /aws-elk-billing/s3_csv_grab.py"
 
   logstash:
     image: droidlabour/logstash:2.3
