@@ -103,13 +103,6 @@ if status.wait() != 0:
 else:
 	print 'ES mapping created'
 
-status = subprocess.Popen(['go run /aws-elk-billing/main.go --file /aws-elk-billing/billing_report_'+timestamp+'_2016-05.csv'], shell=True)
-if status.wait() != 0:
-	print 'Something went wrong while getting the file reference or while talking with logstash'
-	sys.exit(1)
-else:
-	print 'AWS Billing report sucessfully parsed and indexed in Elasticsearch via Logstash :)'
-
 #Index Kibana dashboard
 status = subprocess.Popen(['(cd /aws-elk-billing/kibana; bash orchestrate_dashboard.sh)'], shell=True)
 if status.wait() != 0:
@@ -125,6 +118,14 @@ if status.wait() != 0:
 	sys.exit(1)
 else:
 	print 'Kibana visualization sucessfully indexed to .kibana index in Elasticsearch'
+
+#Run the main golang code to parse the billing file and send it to Elasticsearch over Logstash
+status = subprocess.Popen(['go run /aws-elk-billing/main.go --file /aws-elk-billing/billing_report_'+timestamp+'_2016-05.csv'], shell=True)
+if status.wait() != 0:
+	print 'Something went wrong while getting the file reference or while talking with logstash'
+	sys.exit(1)
+else:
+	print 'AWS Billing report sucessfully parsed and indexed in Elasticsearch via Logstash :)'
 
 while True:
 	pass
