@@ -1,6 +1,7 @@
 # aws-elk-billing
-![Alt text](./screenshots/kibana_dashboard1?raw=true "Overview")
-![Alt text](./screenshots/kibana_dashboard2?raw=true "Overview")
+![Alt text](../../Screenshots/kibana_dashboard1?raw=true "Overview")
+![Alt text](../../Screenshots/kibana_dashboard2?raw=true "Overview")
+
 ## Overview
  
  aws-elk-billing is a combination of configuration snippets and tools to assist with indexing AWS programatic billing access files(CSV's) and visualizing the data using Kibana. The entire process from getting data to visualization can be made automated with the docker architecture and some modification in respective script files.
