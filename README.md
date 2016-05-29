@@ -9,7 +9,7 @@
 ### Primary Components
 Task | Files or Process
 ------------ | -------------
-Building the Docker Architecture and Starting all process | Dockerfile, docker-compose.yml
+Building the Docker Architecture and Starting all process | `Dockerfile`, `docker-compose.yml`
 Configuration of Logstash | `logstash.conf`
 Elasticsearch indexing template | `aws-billing-es-template.json`
 Parsing the aws-billing CSV's and send them to logstash as JSON | `main.go`
@@ -37,20 +37,40 @@ Ports | Process
 5160 | Kibana
 5140 | Logstash
 
+### Set S3 credentials
+Create a file named `docker-compose.aws.prod-key.yml` with the following content and modify it with your S3 credentials
+```
+version: '2'
+ services:
+  env_var:
+   environment:
+    - ENV=prod
+    - DEBIAN_FRONTEND=noninteractive
+    - TERM=xterm
+    - AWS_ACCESS_KEY_ID=---your_access_key---
+    - AWS_SECRET_ACCESS_KEY=---your_secret_key---
+```
+This file is being extended by the `docker-compose.yml` in the root directory
+In this way your credentials will not go to git even if you push any change
 
 #### Run Docker
 The entire process is automated through scripts and docker. All the components would be downloaded automatically inside your docker
 
 First go to the repository root directory.
 
-Run `sudo docker-compose build .`
+Run
+`sudo docker-compose build .`
+
 This command in the root directory of the Repository will start building the `Aws-elk-billing Docker` (4th) docker and this will make sure all the other Three dockers are build correctly.
 
-Then Run `sudo docker-compose up -d`
+Then Run 
+`sudo docker-compose up -d`
 To run all the dockers as demon process.
 PS: remove the -d flag if you want to run as foreground process and get the running logs.
 
-This process wil take sometime (downloading indexing and everything) and after that you can see `kibana` at `localhost:5601`
+This process wil take sometime (downloading indexing and everything),
+
+After that you can see `kibana` at `localhost:5601`
 
 Make sure you change the time stamp from the upper-right corner of your kibana webapp to the time perioud you want to view the details.
 
