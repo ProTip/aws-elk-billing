@@ -110,5 +110,21 @@ if status.wait() != 0:
 else:
 	print 'AWS Billing report sucessfully parsed and indexed in Elasticsearch via Logstash :)'
 
+#Index Kibana dashboard
+status = subprocess.Popen(['(cd /aws-elk-billing/kibana; bash orchestrate_dashboard.sh)'], shell=True)
+if status.wait() != 0:
+	print 'Kibana dashboard failed to indexed to .kibana index in Elasticsearch'
+	sys.exit(1)
+else:
+	print 'Kibana dashboard sucessfully indexed to .kibana index in Elasticsearch'
+
+#Index Kibana visualization
+status = subprocess.Popen(['(cd /aws-elk-billing/kibana; bash orchestrate_visualisation.sh)'], shell=True)
+if status.wait() != 0:
+	print 'Kibana visualization failed to indexed to .kibana index in Elasticsearch'
+	sys.exit(1)
+else:
+	print 'Kibana visualization sucessfully indexed to .kibana index in Elasticsearch'
+
 while True:
 	pass

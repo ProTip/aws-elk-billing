@@ -1,0 +1,10 @@
+{
+      "title": "finalVisualization_5days_30min_line_split",
+      "visState": "{\"title\":\"finalVisualization_5days_30min_line_split\",\"type\":\"line\",\"params\":{\"addLegend\":true,\"addTimeMarker\":true,\"addTooltip\":true,\"defaultYExtents\":true,\"drawLinesBetweenPoints\":true,\"interpolate\":\"linear\",\"radiusRatio\":\"3\",\"scale\":\"linear\",\"setYExtents\":false,\"shareYAxis\":true,\"showCircles\":true,\"smoothLines\":true,\"times\":[],\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"sum\",\"schema\":\"metric\",\"params\":{\"field\":\"lineItem/UnblendedCost\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"lineItem/UsageStartDate\",\"interval\":\"custom\",\"customInterval\":\"30m\",\"min_doc_count\":1,\"extended_bounds\":{}}},{\"id\":\"3\",\"type\":\"significant_terms\",\"schema\":\"group\",\"params\":{\"field\":\"lineItem/ProductCode.raw\",\"size\":10}}],\"listeners\":{}}",
+      "uiStateJSON": "{\"spy\":{\"mode\":{\"fill\":false,\"name\":null}},\"vis\":{\"colors\":{\"AmazonEC2\":\"#3F6833\",\"AmazonS3\":\"#967302\",\"AmazonRoute53\":\"#2F575E\",\"AmazonCloudFront\":\"#99440A\",\"AmazonSNS\":\"#58140C\"}}}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"aws-billing-*\",\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}},\"filter\":[]}"
+      }
+    }
