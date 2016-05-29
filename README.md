@@ -1,5 +1,6 @@
 # aws-elk-billing
-![Alt text](/../screenshots/screenshots/aws-costing-overview.png?raw=true "Overview")
+![Alt text](./screenshots/kibana_dashboard1?raw=true "Overview")
+![Alt text](./screenshots/kibana_dashboard2?raw=true "Overview")
 ## Overview
  
  aws-elk-billing is a combination of configuration snippets and tools to assist with indexing AWS programatic billing access files(CSV's) and visualizing the data using Kibana. The entire process from getting data to visualization can be made automated with the docker architecture and some modification in respective script files.
@@ -49,6 +50,8 @@ To run all the dockers as demon process.
 PS: remove the -d flag if you want to run as foreground process and get the running logs.
 
 This process wil take sometime (downloading indexing and everything) and after that you can see `kibana` at `localhost:5601`
+
+Make sure you change the time stamp from the upper-right corner of your kibana webapp to the time perioud you want to view the details.
 
 I have provided a Demo Dashboard along with some visualization. Check it out and use it as referenec to build your own dashboard and visualization according to your need.
 
