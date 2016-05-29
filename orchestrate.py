@@ -88,14 +88,14 @@ elasticsearch_socket.close()
 logstash_socket.close()
 kibana_socket.close()
 
+#DELETE earlier aws-billing* index if exists
 status = subprocess.Popen(['curl -XDELETE db.elasticsearch.priceboard.in:9200/aws-billing*'], shell=True)
 if status.wait() != 0:
-	print 'Something went wrong while deleting earlier aws-billing* indice'
-	print 'I think there was no aws-billing* indice'
-	sys.exit(1)
+	print 'I think there are no aws-billing* indice, its OK main golang code will create a new one for you :)'
 else:
-	print 'aws-billing* indice deleted'
+	print 'aws-billing* indice deleted, its OK main golang code will create a new one for you :)'
 
+#Index aws mapping json file
 status = subprocess.Popen(['curl -XPUT db.elasticsearch.priceboard.in:9200/_template/aws_billing -d "`cat /aws-elk-billing/aws-billing-es-template.json`"'], shell=True)
 if status.wait() != 0:
 	print 'Something went wrong while creating mapping index'
