@@ -15,9 +15,9 @@ services:
     - logstash
     - elasticsearch
     links:
-    - kibana:kibana.priceboard.in
-    - logstash:db.logstash.priceboard.in
-    - elasticsearch:db.elasticsearch.priceboard.in
+    - kibana:kibana
+    - logstash:logstash
+    - elasticsearch:elasticsearch
     extends:
      file: ../docker-compose.aws.prod-key.yml
      service: env_var
@@ -27,23 +27,24 @@ services:
     image: droidlabour/logstash:2.3
     ports:
     - 5140:5140
-    links:
-    - elasticsearch:db.elasticsearch.priceboard.in
     depends_on:
     - elasticsearch
+    links:
+    - elasticsearch:elasticsearch
     volumes:
     - ./logstash.conf:/logstash.conf
     command: "logstash -f /logstash.conf"
 
   kibana:
     image: droidlabour/kibana:4.5
+    volumes:
+    - ./kibana.yml:/opt/kibana/config/kibana.yml
     ports:
     - 5601:5601
-    links:
-    - elasticsearch:db.elasticsearch.priceboard.in
     depends_on:
     - elasticsearch
-
+    links:
+    - elasticsearch:elasticsearch
   elasticsearch:
     image: droidlabour/elasticsearch:2.3.3
     ports:
