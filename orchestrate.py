@@ -57,7 +57,7 @@ s3 = boto3.client('s3')
 
 # give the correct bucket name for your s3 billing bucket
 bucketname = os.environ['S3_BUCKET_NAME'] 
-
+path_name_s3_billing = os.environ['S3_BILL_PATH_NAME']
 #timestamp
 timestamp = time.strftime('%H_%M')
 
@@ -66,13 +66,12 @@ generate_monthly_dir_name = datetime.date.today().strftime('%Y%m01')+'-'+\
                         (datetime.date.today()+relativedelta(months=1)).strftime('%Y%m01')
 
 # json file name
-latest_json_file_name = '/billing_report_for_elk_dashboard/'+generate_monthly_dir_name\
-                +'/billing_report_for_elk_dashboard-Manifest.json'
+latest_json_file_name = path_name_s3_billing+'/'+generate_monthly_dir_name\
+                +path_name_s3_billing+'-Manifest.json'
 
 # delete previous getfile and  csv files and part downloading files
 process_delete_csv = subprocess.Popen(["find -name 'billing_report_*' -exec rm -f {} \;"],shell=True)
 process_delete_json = subprocess.Popen(["find -name 'getfile*' -exec rm -f {} \;"],shell=True)
-
 
 # download the jsonfile as getfile_$time.json from s3
 s3.download_file(bucketname,latest_json_file_name,'getfile'+timestamp+'.json')
