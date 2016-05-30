@@ -133,5 +133,4 @@ if status.wait() != 0:
 else:
 	print 'AWS Billing report sucessfully parsed and indexed in Elasticsearch via Logstash :)'
 
-while True:
-	pass
+
