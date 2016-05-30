@@ -49,6 +49,10 @@ version: '2'
     - TERM=xterm
     - AWS_ACCESS_KEY_ID=---your_access_key---
     - AWS_SECRET_ACCESS_KEY=---your_secret_key---
+    - S3_BUCKET_NAME=...your_bucket_name...
+    - S3_BILL_PATH_NAME=/...pathname_without_ending_slash...
+# follow the syntax, '/your_directory' and don't end with '/' , This path should have the
+# monthly reports in child directory
 ```
 This file is being extended by the `docker-compose.yml` in the root directory
 In this way your credentials will not go to git even if you push any change
