@@ -61,9 +61,14 @@ version: '2'
 The entire process is automated through scripts and docker. All the components would be downloaded automatically inside your docker
 
 1. ```sudo docker-compose up -d```
-2. View `kibana` at `http://localhost:5601`, For MAC `http://$(docker-machine ip machine-name):5601`
+2. View `Kibana` at http://localhost:5601
 
-3. `sudo docker-compose down` to shutdown all the docker containers.
+    2.1 `Kibana AWS Billing Dashboard` http://localhost:5601/app/kibana#/dashboard/AWS-Billing-DashBoard
+    
+    2.2 For MAC replace localhost with the ip of docker-machine
+    To find IP of docker-machine `docker-machine ip default`
+
+3   . `sudo docker-compose down` to shutdown all the docker containers.
 
 ## Gotchas
 
