@@ -15,4 +15,4 @@ run_tests.py
 main
 *.csv
 *.gz
-getfile.json
+getfile*.json
