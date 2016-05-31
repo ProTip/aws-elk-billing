@@ -6,6 +6,12 @@
  
 aws-elk-billing is a combination of configuration snippets and tools to assist with indexing AWS programatic billing access files(CSV's) and visualizing the data using Kibana.
 
+Currently it supports `AWS Cost and Usage Report` type, although it might work for other [AWS Billing Report Types](http://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/detailed-billing-reports.html#other-reports) which contains some extra columns along with all the columns from `AWS Cost and Usage Report`.
+
+You can create `AWS Cost and Usage Report` at https://console.aws.amazon.com/billing/home#/reports
+
+or follow instructions at http://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/detailed-billing-reports.html#turnonreports
+
 
 ### Architecture
 There are Four Docker containers. 
@@ -77,3 +83,4 @@ The entire process is automated through scripts and docker. All the components w
     2. Depending on the size of AWS Billing CSV report `main.go` will take time to index all the data to Elasticsearch via Logstash.
 * You can view the dashboard in kibana, even while `main.go` is still indexing the data.
 * In order to index new data, you'll have to run `docker-compose up -d` again.
+
