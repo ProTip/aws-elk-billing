@@ -16,3 +16,4 @@ main
 *.csv
 *.gz
 getfile*.json
+docker-compose.aws.prod-key.yml

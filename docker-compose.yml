@@ -5,7 +5,6 @@ services:
   aws-elk-billing:
     build : .
     environment:
-    - ENV=debug
     - DEBIAN_FRONTEND=noninteractive
     - TERM=xterm
     volumes:
@@ -19,7 +18,7 @@ services:
     - logstash:logstash
     - elasticsearch:elasticsearch
     extends:
-     file: ../docker-compose.aws.prod-key.yml
+     file: ./docker-compose.aws.prod-key.yml
      service: env_var
     command: bash -c "python /aws-elk-billing/orchestrate.py && /sbin/init"
 
@@ -45,6 +44,7 @@ services:
     - elasticsearch
     links:
     - elasticsearch:elasticsearch
+
   elasticsearch:
     image: droidlabour/elasticsearch:2.3.3
     ports:
