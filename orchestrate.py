@@ -22,6 +22,7 @@ for _ in range(5):
 	try:
 		print 'Checking if Elasticsearch container has started to listen to 9200'
 		elasticsearch_socket.connect(('elasticsearch', 9200))
+		print 'Great Elasticsearch is listening on 9200, 9300'
 		break
 	except Exception as e:
 		print("Something's wrong with Elasticsearch. Exception is %s" % (e))
@@ -32,6 +33,7 @@ for _ in range(5):
 	try:
 		print 'Checking if Logstash container has started to listen to 5140'
 		logstash_socket.connect(('logstash', 5140))
+		print 'Great Logstash is listening on 5140'
 		break
 	except Exception as e:
 		print("Something's wrong with Logstash. Exception is %s" % (e))
@@ -42,6 +44,7 @@ for _ in range(5):
 	try:
 		print 'Checking if Kibana container has started to listen to 5160'
 		kibana_socket.connect(('kibana', 5160))
+		print 'Great Kibana is listening on 5160'
 		break
 	except Exception as e:
 		print("Something's wrong with Kibana. Exception is %s" % (e))
@@ -107,7 +110,7 @@ if status.wait() != 0:
 	print 'Something went wrong while creating mapping index'
 	sys.exit(1)
 else:
-	print 'ES mapping created'
+	print 'ES mapping created :)'
 
 #Index Kibana dashboard
 status = subprocess.Popen(['(cd /aws-elk-billing/kibana; bash orchestrate_dashboard.sh)'], shell=True)
@@ -115,7 +118,7 @@ if status.wait() != 0:
 	print 'Kibana dashboard failed to indexed to .kibana index in Elasticsearch'
 	sys.exit(1)
 else:
-	print 'Kibana dashboard sucessfully indexed to .kibana index in Elasticsearch'
+	print 'Kibana dashboard sucessfully indexed to .kibana index in Elasticsearch :)'
 
 #Index Kibana visualization
 status = subprocess.Popen(['(cd /aws-elk-billing/kibana; bash orchestrate_visualisation.sh)'], shell=True)
@@ -123,7 +126,7 @@ if status.wait() != 0:
 	print 'Kibana visualization failed to indexed to .kibana index in Elasticsearch'
 	sys.exit(1)
 else:
-	print 'Kibana visualization sucessfully indexed to .kibana index in Elasticsearch'
+	print 'Kibana visualization sucessfully indexed to .kibana index in Elasticsearch :)'
 
 #Run the main golang code to parse the billing file and send it to Elasticsearch over Logstash
 status = subprocess.Popen(['go run /aws-elk-billing/main.go --file /aws-elk-billing/'+local_csv_filename], shell=True)
@@ -132,5 +135,3 @@ if status.wait() != 0:
 	sys.exit(1)
 else:
 	print 'AWS Billing report sucessfully parsed and indexed in Elasticsearch via Logstash :)'
-
-
