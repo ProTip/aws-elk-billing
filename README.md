@@ -68,9 +68,11 @@ The entire process is automated through scripts and docker. All the components w
 1. ```sudo docker-compose up -d```
 2. View `Kibana` at http://localhost:5601
 
-    2.1 `Kibana AWS Billing Dashboard` http://localhost:5601/app/kibana#/dashboard/AWS-Billing-DashBoard
+    2.1 Use the **index pattern** as `aws-billing-*` and select the **time field** as `lineItem/UsageStartDate`
     
-    2.2 For MAC replace localhost with the ip of docker-machine
+    2.2 `Kibana AWS Billing Dashboard` http://localhost:5601/app/kibana#/dashboard/AWS-Billing-DashBoard
+    
+    2.3 For MAC replace localhost with the ip of docker-machine
     To find IP of docker-machine `docker-machine ip default`
 
 3   . `sudo docker-compose down` to shutdown all the docker containers.
