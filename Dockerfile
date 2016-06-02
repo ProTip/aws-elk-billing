@@ -1,7 +1,7 @@
 FROM ubuntu:14.04.4
 
 # gcc for cgo
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --force-yes --no-install-recommends \
 		g++ \
 		gcc \
 		libc6-dev \
@@ -13,7 +13,7 @@ ENV GOLANG_DOWNLOAD_URL https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.
 ENV GOLANG_DOWNLOAD_SHA256 e40c36ae71756198478624ed1bb4ce17597b3c19d243f3f0899bb5740d56212a
 
 RUN apt-get update
-RUN apt-get install -y curl
+RUN apt-get install -y --force-yes curl
 RUN curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
 	&& echo "$GOLANG_DOWNLOAD_SHA256  golang.tar.gz" | sha256sum -c - \
 	&& tar -C /usr/local -xzf golang.tar.gz \
@@ -26,11 +26,14 @@ RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 
 COPY go-wrapper /usr/local/bin/
 
-RUN apt-get install -y python
-RUN apt-get install -y python-pip
+RUN apt-get install -y --force-yes python
+RUN apt-get install -y --force-yes python-pip
 RUN pip install boto3
 
 WORKDIR /aws-elk-billing
 
 ENV TZ=Asia/Kolkata
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN ls 
+
+CMD ["/sbin/init"]
