@@ -1,6 +1,5 @@
 # aws-elk-billing
-![Alt text](https://github.com/PriceBoardIn/aws-elk-billing/blob/master/screenshots/kibana_dashboard1.png?raw=true "Overview")
-![Alt text](https://github.com/PriceBoardIn/aws-elk-billing/blob/master/screenshots/kibana_dashboard2.png?raw=true "Overview")
+![Alt text](https://raw.githubusercontent.com/PriceBoardIn/aws-elk-billing/master/screenshots/kibana-dashboard.png "Overview")
 
 ## Overview
  

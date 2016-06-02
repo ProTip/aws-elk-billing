@@ -18,33 +18,33 @@ elasticsearch_socket	= socket.socket()
 logstash_socket			= socket.socket()
 kibana_socket			= socket.socket()
 
-for _ in range(5):
+for _ in range(15):
 	try:
 		print 'Checking if Elasticsearch container has started to listen to 9200'
 		elasticsearch_socket.connect(('elasticsearch', 9200))
-		print 'Great Elasticsearch is listening on 9200, 9300'
+		print 'Great Elasticsearch is listening on 9200, 9300 :)'
 		break
 	except Exception as e:
 		print("Something's wrong with Elasticsearch. Exception is %s" % (e))
 		print 'I will retry after 4 seconds'
 		time.sleep(4)
 
-for _ in range(5):
+for _ in range(15):
 	try:
 		print 'Checking if Logstash container has started to listen to 5140'
 		logstash_socket.connect(('logstash', 5140))
-		print 'Great Logstash is listening on 5140'
+		print 'Great Logstash is listening on 5140 :)'
 		break
 	except Exception as e:
 		print("Something's wrong with Logstash. Exception is %s" % (e))
 		print 'I will retry after 4 seconds'
 		time.sleep(4)
 
-for _ in range(5):
+for _ in range(15):
 	try:
 		print 'Checking if Kibana container has started to listen to 5160'
-		kibana_socket.connect(('kibana', 5160))
-		print 'Great Kibana is listening on 5160'
+		kibana_socket.connect(('kibana', 5601))
+		print 'Great Kibana is listening on 5601 :)'
 		break
 	except Exception as e:
 		print("Something's wrong with Kibana. Exception is %s" % (e))
