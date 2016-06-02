@@ -96,42 +96,50 @@ s3.download_file(bucketname,latest_gzip_filename,local_gz_filename)
 print("Extracting latest csv file")
 process_gunzip = subprocess.Popen(['gunzip -v '+ local_gz_filename],shell=True)
 
+#current month index format (name)
+index_format = datetime.date.today().strftime('%Y.%m')
 
 #DELETE earlier aws-billing* index if exists
-status = subprocess.Popen(['curl -XDELETE elasticsearch:9200/aws-billing*'], shell=True)
+status = subprocess.Popen(['curl -XDELETE elasticsearch:9200/aws-billing-'+index_format], shell=True)
 if status.wait() != 0:
-	print 'I think there are no aws-billing* indice, its OK main golang code will create a new one for you :)'
+    print 'I think there are no aws-billing* indice or it is outdated, its OK main golang code will create a new one for you :)'
 else:
-	print 'aws-billing* indice deleted, its OK main golang code will create a new one for you :)'
+    print 'aws-billing* indice deleted, its OK main golang code will create a new one for you :)'
 
 #Index aws mapping json file
 status = subprocess.Popen(['curl -XPUT elasticsearch:9200/_template/aws_billing -d "`cat /aws-elk-billing/aws-billing-es-template.json`"'], shell=True)
 if status.wait() != 0:
-	print 'Something went wrong while creating mapping index'
-	sys.exit(1)
+    print 'Something went wrong while creating mapping index'
+    sys.exit(1)
 else:
-	print 'ES mapping created :)'
+    print 'ES mapping created :)'
 
 #Index Kibana dashboard
 status = subprocess.Popen(['(cd /aws-elk-billing/kibana; bash orchestrate_dashboard.sh)'], shell=True)
 if status.wait() != 0:
-	print 'Kibana dashboard failed to indexed to .kibana index in Elasticsearch'
-	sys.exit(1)
+    print 'Kibana dashboard failed to indexed to .kibana index in Elasticsearch'
+    sys.exit(1)
 else:
-	print 'Kibana dashboard sucessfully indexed to .kibana index in Elasticsearch :)'
+    print 'Kibana dashboard sucessfully indexed to .kibana index in Elasticsearch :)'
 
 #Index Kibana visualization
 status = subprocess.Popen(['(cd /aws-elk-billing/kibana; bash orchestrate_visualisation.sh)'], shell=True)
 if status.wait() != 0:
-	print 'Kibana visualization failed to indexed to .kibana index in Elasticsearch'
-	sys.exit(1)
+    print 'Kibana visualization failed to indexed to .kibana index in Elasticsearch'
+    sys.exit(1)
 else:
-	print 'Kibana visualization sucessfully indexed to .kibana index in Elasticsearch :)'
+    print 'Kibana visualization sucessfully indexed to .kibana index in Elasticsearch :)'
 
 #Run the main golang code to parse the billing file and send it to Elasticsearch over Logstash
 status = subprocess.Popen(['go run /aws-elk-billing/main.go --file /aws-elk-billing/'+local_csv_filename], shell=True)
 if status.wait() != 0:
-	print 'Something went wrong while getting the file reference or while talking with logstash'
-	sys.exit(1)
+    print 'Something went wrong while getting the file reference or while talking with logstash'
+    sys.exit(1)
 else:
-	print 'AWS Billing report sucessfully parsed and indexed in Elasticsearch via Logstash :)'
+    print 'AWS Billing report sucessfully parsed and indexed in Elasticsearch via Logstash :)'
+
+
+# /sbin/init is not working so used this loop to keep the docker up, Have to change it!
+while(True):
+    pass
+

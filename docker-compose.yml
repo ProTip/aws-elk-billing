@@ -20,7 +20,7 @@ services:
     extends:
      file: ../docker-compose.aws.prod-key.yml
      service: env_var
-    command: bash -c "python -u /aws-elk-billing/orchestrate.py && /sbin/init "
+    command: bash -c "python -u /aws-elk-billing/orchestrate.py"
 
   logstash:
     image: droidlabour/logstash:2.3
