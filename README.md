@@ -46,7 +46,7 @@ Ports | Process
 5140 | Logstash
 
 ### Set S3 credentials and AWS Billing bucket and directory name
-Rename ```prod.sample.env``` provide value for the following keys `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`, `S3_BILL_PATH_NAME`
+Rename [prod.sample.env](https://github.com/PriceBoardIn/aws-elk-billing/blob/master/prod.sample.env) to prod.env and provide values for the following keys `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`, `S3_BILL_PATH_NAME`
 
 ##### Make sure `S3_BILL_PATH_NAME` starts with `/` but does not ends with `/`
 ##### This path must have a date range folder with the pattern as `yyyymmdd-yyyymmdd`
@@ -73,5 +73,3 @@ The entire process is automated through scripts and docker. All the components w
     2. Depending on the size of AWS Billing CSV report `main.go` will take time to index all the data to Elasticsearch via Logstash.
 * You can view the dashboard in kibana, even while `main.go` is still indexing the data.
 * In order to index new data, you'll have to run `docker-compose up -d` again.
-
-
