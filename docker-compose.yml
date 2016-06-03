@@ -17,9 +17,8 @@ services:
     - kibana:kibana
     - logstash:logstash
     - elasticsearch:elasticsearch
-    extends:
-     file: ../docker-compose.aws.prod-key.yml
-     service: env_var
+    env_file:
+    - prod.env
     command: bash -c "python -u /aws-elk-billing/orchestrate.py"
 
   logstash:
