@@ -3,7 +3,7 @@
 version: '2'
 services:
   aws-elk-billing:
-    image : priceboard/aws-elk-billing
+    build: .
     environment:
     - DEBIAN_FRONTEND=noninteractive
     - TERM=xterm
