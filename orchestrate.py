@@ -169,8 +169,8 @@ s3 = boto3.client('s3')
 bucketname = os.environ['S3_BUCKET_NAME']
 path_name_s3_billing = os.environ['S3_BILL_PATH_NAME']
 key_names = s3.list_objects(
-    Bucket='priceboard-billing',
-    Prefix='/billing_report_for_elk_dashboard/',
+    Bucket=bucketname,
+    Prefix=path_name_s3_billing + '/',
     Delimiter='/')
 s3_dir_names = []
 
