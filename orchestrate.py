@@ -92,20 +92,22 @@ def get_req_csv_from_s3(monthly_dir_name):
         ['gunzip -v ' + local_gz_filename], shell=True)
     return local_csv_filename
 
-
-def index_csv(filename, dir_name, template=True):
-    if template:
-        # Index aws mapping json file
-        status = subprocess.Popen(
-            ['curl -XPUT elasticsearch:9200/_template/aws_billing -d "`cat /aws-elk-billing/aws-billing-es-template.json`"'],
-            shell=True)
-        if status.wait() != 0:
-            print 'Something went wrong while creating mapping index'
-            sys.exit(1)
-        else:
-            print 'ES mapping created :)'
+def index_template():
+    out = subprocess.check_output(['curl -XHEAD -i "elasticsearch:9200/_template/aws_billing"'],shell=True)
+    if '200 OK' not in out:
+	status = subprocess.Popen(
+		['curl -XPUT elasticsearch:9200/_template/aws_billing -d "`cat /aws-elk-billing/aws-billing-es-template.json`"'],
+		shell=True)
+	if status.wait() != 0:
+		print 'Something went wrong while creating mapping index'
+		sys.exit(1)
+	else:
+		print 'ES mapping created :)'
     else:
-        print 'Template Already Exist'
+	print 'Template already exists'
+
+
+def index_csv(filename, dir_name):
 
     # DELETE earlier aws-billing* index if exists for the current indexing month
     # current month index format (name)
@@ -190,7 +192,6 @@ index_time.sort(reverse=True)
 
 dir_start = 0
 dir_end = None
-template = True
 
 if index_time:
     current_dir = dtd.today().strftime('%Y%m01') + '-' + (dtd.today() + \
@@ -201,15 +202,16 @@ if index_time:
         dtdt.strptime(last_ind_dir, '%Y%m%d') + relativedelta(months=1)).strftime('%Y%m01')
     dir_start = s3_dir_names.index(last_ind_dir)
     dir_end = s3_dir_names.index(current_dir) + 1
-    template = False
 
-index_kibana()
 print('Months to be indexed: %s', s3_dir_names[dir_start:dir_end])
+
+index_template()
 
 for dir_name in s3_dir_names[dir_start:dir_end]:
     csv_filename = get_req_csv_from_s3(dir_name)
-    index_csv(csv_filename, dir_name, template)
-    template = False
+    index_csv(csv_filename, dir_name)
+
+index_kibana()
 
 # delete all getfile, csv files and part downloading files after indexing over
 process_delete_csv = subprocess.Popen(
