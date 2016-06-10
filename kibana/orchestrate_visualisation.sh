@@ -19,3 +19,5 @@ curl -XPUT "http://elasticsearch:9200/.kibana/visualization/S3_Api_Calls_daily" 
 curl -XPUT "http://elasticsearch:9200/.kibana/visualization/Pi-chart-for-seperate-services" -d "`cat Pi-chart-for-seperate-services.json`"
 
 curl -XPUT "http://elasticsearch:9200/.kibana/visualization/Cost_For_AmazonS3_requests" -d "`cat Cost_For_AmazonS3_requests.json`"
+
+curl -XPUT "http://elasticsearch:9200/.kibana/visualization/Top 5 used service split daily" -d "`cat top_5_used_service_split_daily.json`"

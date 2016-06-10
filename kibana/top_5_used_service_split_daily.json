@@ -1,0 +1,10 @@
+{
+      "title": "Top 5 used service split daily",
+      "visState": "{\"title\":\"finalVisualization_5days_30min_row_split\",\"type\":\"line\",\"params\":{\"addLegend\":true,\"addTimeMarker\":true,\"addTooltip\":true,\"defaultYExtents\":true,\"drawLinesBetweenPoints\":true,\"interpolate\":\"linear\",\"radiusRatio\":9,\"scale\":\"linear\",\"setYExtents\":false,\"shareYAxis\":true,\"showCircles\":true,\"smoothLines\":true,\"times\":[],\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"sum\",\"schema\":\"metric\",\"params\":{\"field\":\"lineItem/UnblendedCost\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"lineItem/UsageStartDate\",\"interval\":\"d\",\"customInterval\":\"30m\",\"min_doc_count\":1,\"extended_bounds\":{},\"customLabel\":\"\"}},{\"id\":\"3\",\"type\":\"terms\",\"schema\":\"group\",\"params\":{\"field\":\"lineItem/ProductCode.raw\",\"size\":5,\"order\":\"asc\",\"orderBy\":\"1\"}},{\"id\":\"4\",\"type\":\"significant_terms\",\"schema\":\"split\",\"params\":{\"field\":\"lineItem/ProductCode.raw\",\"size\":6,\"customLabel\":\"service\",\"row\":true}}],\"listeners\":{}}",
+      "uiStateJSON": "{\"spy\":{\"mode\":{\"fill\":false,\"name\":null}},\"vis\":{\"colors\":{\"AmazonEC2\":\"#3F6833\",\"AmazonRoute53\":\"#2F575E\",\"AmazonCloudFront\":\"#99440A\",\"AmazonS3\":\"#967302\",\"AmazonSNS\":\"#58140C\"}}}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"aws-billing-*\",\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}},\"filter\":[]}"
+      }
+    }
