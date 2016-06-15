@@ -140,9 +140,17 @@ def index_csv(filename, dir_name):
 
 
 def index_kibana():
+    # Index the search mapping for Discover to work 
     status = subprocess.Popen(
             ['(cd /aws-elk-billing/kibana; bash orchestrate_search_mapping.sh)'],
             shell=True)
+    if status.wait() != 0:
+        print 'The Discover Search mapping failed to be indexed to .kibana index in Elasticsearch'
+        sys.exit(1)
+    else:
+        print 'The Discover Search mapping sucessfully indexed to .kibana index in Elasticsearch, Kept intact if user already used it :)'
+
+
     # Index Kibana dashboard
     status = subprocess.Popen(
         ['(cd /aws-elk-billing/kibana; bash orchestrate_dashboard.sh)'],
