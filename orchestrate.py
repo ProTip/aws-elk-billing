@@ -145,20 +145,20 @@ def index_kibana():
         ['(cd /aws-elk-billing/kibana; bash orchestrate_dashboard.sh)'],
         shell=True)
     if status.wait() != 0:
-        print 'Kibana dashboard failed to indexed to .kibana index in Elasticsearch'
+        print 'AWS-Billing-DashBoard default dashboard failed to indexed to .kibana index in Elasticsearch'
         sys.exit(1)
     else:
-        print 'Kibana dashboard sucessfully indexed to .kibana index in Elasticsearch :)'
+        print 'AWS-Billing-DashBoard default dashboard sucessfully indexed to .kibana index in Elasticsearch, Kept intact if user already used it :)'
 
     # Index Kibana visualization
     status = subprocess.Popen(
         ['(cd /aws-elk-billing/kibana; bash orchestrate_visualisation.sh)'],
         shell=True)
     if status.wait() != 0:
-        print 'Kibana visualization failed to indexed to .kibana index in Elasticsearch'
+        print 'Kibana default visualizations failed to indexed to .kibana index in Elasticsearch'
         sys.exit(1)
     else:
-        print 'Kibana visualization sucessfully indexed to .kibana index in Elasticsearch :)'
+        print 'Kibana default visualizations sucessfully indexed to .kibana index in Elasticsearch, Kept intact if user have already used it :)'
 
 # checking for established connection
 check_connection()
