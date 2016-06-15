@@ -140,6 +140,9 @@ def index_csv(filename, dir_name):
 
 
 def index_kibana():
+    status = subprocess.Popen(
+            ['(cd /aws-elk-billing/kibana; bash orchestrate_search_mapping.sh)'],
+            shell=True)
     # Index Kibana dashboard
     status = subprocess.Popen(
         ['(cd /aws-elk-billing/kibana; bash orchestrate_dashboard.sh)'],
