@@ -54,7 +54,6 @@ def check_connection():
     logstash_socket.close()
     kibana_socket.close()
 
-
 def get_req_csv_from_s3(monthly_dir_name):
     # timestamp
     timestamp = time.strftime('%H_%M')
@@ -106,7 +105,6 @@ def index_template():
     else:
 	print 'Template already exists'
 
-
 def index_csv(filename, dir_name):
 
     # DELETE earlier aws-billing* index if exists for the current indexing month
@@ -116,10 +114,6 @@ def index_csv(filename, dir_name):
         '%Y%m%d').strftime('%Y.%m')
     os.environ['file_y_m'] = index_format
     # have to change the name of the index in logstash index=>indexname
-
-    status = subprocess.Popen(
-        ['curl -XGET elasticsearch:9200/_cat/indices/?v'],
-        shell=True)
 
     status = subprocess.Popen(
         ['curl -XDELETE elasticsearch:9200/aws-billing-' + index_format], shell=True)
@@ -137,7 +131,6 @@ def index_csv(filename, dir_name):
         sys.exit(1)
     else:
         print 'AWS Billing report sucessfully parsed and indexed in Elasticsearch via Logstash :)'
-
 
 def index_kibana():
     # Index the search mapping for Discover to work 
@@ -171,66 +164,96 @@ def index_kibana():
     else:
         print 'Kibana default visualizations sucessfully indexed to .kibana index in Elasticsearch, Kept intact if user have already used it :)'
 
-# checking for established connection
-check_connection()
+def get_s3_bucket_dir_to_index():
 
-# you must provide your credentials in the recomanded way, here we are
-# passing it by ENV variables
-s3 = boto3.client('s3')
+    key_names = s3.list_objects(
+        Bucket=bucketname,
+        Prefix=path_name_s3_billing + '/',
+        Delimiter='/')
+    s3_dir_names = []
 
-# give the correct bucket name for your s3 billing bucket
-bucketname = os.environ['S3_BUCKET_NAME']
-path_name_s3_billing = os.environ['S3_BILL_PATH_NAME']
-key_names = s3.list_objects(
-    Bucket=bucketname,
-    Prefix=path_name_s3_billing + '/',
-    Delimiter='/')
-s3_dir_names = []
+    for keys in key_names['CommonPrefixes']:
+        s3_dir_names.append(keys['Prefix'].split('/')[-2])
 
-for keys in key_names['CommonPrefixes']:
-    s3_dir_names.append(keys['Prefix'].split('/')[-2])
+    s3_dir_names.sort()
+    es = pyes.ElasticSearch('http://elasticsearch:9200')
+    index_list = es.get_mapping('aws-billing*').keys()
+    index_time = []
+    for i in index_list:
+        if i:
+            index_time.append(es.search(index=i, size=1, query={"query": {"match_all": {}}})[
+                              'hits']['hits'][0]['_source']['@timestamp'])
 
-s3_dir_names.sort()
-es = pyes.ElasticSearch('http://elasticsearch:9200')
-index_list = es.get_mapping('aws-billing*').keys()
-index_time = []
-for i in index_list:
-    if i:
-        index_time.append(es.search(index=i, size=1, query={"query": {"match_all": {}}})[
-                          'hits']['hits'][0]['_source']['@timestamp'])
+    index_time.sort(reverse=True)
 
-index_time.sort(reverse=True)
+    dir_start = 0
+    dir_end = None
 
-dir_start = 0
-dir_end = None
+    if index_time:
+        current_dir = dtd.today().strftime('%Y%m01') + '-' + (dtd.today() + \
+                                relativedelta(months=1)).strftime('%Y%m01')
 
-if index_time:
-    current_dir = dtd.today().strftime('%Y%m01') + '-' + (dtd.today() + \
-                            relativedelta(months=1)).strftime('%Y%m01')
+        last_ind_dir = index_time[0].split('T')[0].replace('-', '')
+        last_ind_dir = dtdt.strptime(last_ind_dir, '%Y%m%d').strftime('%Y%m01') + '-' + (
+            dtdt.strptime(last_ind_dir, '%Y%m%d') + relativedelta(months=1)).strftime('%Y%m01')
+        dir_start = s3_dir_names.index(last_ind_dir)
+        dir_end = s3_dir_names.index(current_dir) + 1
 
-    last_ind_dir = index_time[0].split('T')[0].replace('-', '')
-    last_ind_dir = dtdt.strptime(last_ind_dir, '%Y%m%d').strftime('%Y%m01') + '-' + (
-        dtdt.strptime(last_ind_dir, '%Y%m%d') + relativedelta(months=1)).strftime('%Y%m01')
-    dir_start = s3_dir_names.index(last_ind_dir)
-    dir_end = s3_dir_names.index(current_dir) + 1
+    s3_dir_to_index = s3_dir_names[dir_start:dir_end]
+    print('Months to be indexed: %s', s3_dir_to_index)
+    # returning only the dirnames which are to be indexed
+    return  s3_dir_to_index
 
-print('Months to be indexed: %s', s3_dir_names[dir_start:dir_end])
+def main():
+    # function to index the default template mapping of the data
+    index_template()
 
-index_template()
+    # getting the required buckets names to index from get_s3_bucket_dir_to_index()
+    # this throws pyelasticsearch.exceptions.ElasticHttpError error when trying to index in a small interval
+    while(True):
+        try:
+            s3_dir_to_index = get_s3_bucket_dir_to_index()
+            break
+        except pyes.exceptions.ElasticHttpError as er:
+            print('Trying again after the cluster is healthy:',er)
+            time.sleep(5)
 
-for dir_name in s3_dir_names[dir_start:dir_end]:
-    csv_filename = get_req_csv_from_s3(dir_name)
-    index_csv(csv_filename, dir_name)
+    # downloading the csv file with get_req_csv_from_s3() and then calling the index_csv() to index it in our elasticsearch
+    for dir_name in s3_dir_to_index:
+        csv_filename = get_req_csv_from_s3(dir_name)
+        index_csv(csv_filename, dir_name)
 
-index_kibana()
+    # function to index deafualt dashboards, viasualization and search mapping in the .kibana index of elasticsearch 
+    index_kibana()
 
-# delete all getfile, csv files and part downloading files after indexing over
-process_delete_csv = subprocess.Popen(
-    ["find /aws-elk-billing -name 'billing_report_*' -exec rm -f {} \;"],
-    shell=True)
-process_delete_json = subprocess.Popen(
-    ["find /aws-elk-billing -name 'getfile*' -exec rm -f {} \;"], shell=True)
+    # Printing the final index after everything is done
+    status = subprocess.Popen(
+        ['curl -XGET elasticsearch:9200/_cat/indices/?v'],
+        shell=True)
 
-# /sbin/init is not working so used this loop to keep the docker up, Have to change it!
-while(True):
-    pass
+
+    # delete all getfile, csv files and part downloading files after indexing over
+    process_delete_csv = subprocess.Popen(
+        ["find /aws-elk-billing -name 'billing_report_*' -exec rm -f {} \;"],
+        shell=True)
+    process_delete_json = subprocess.Popen(
+        ["find /aws-elk-billing -name 'getfile*' -exec rm -f {} \;"], shell=True)
+
+    # /sbin/init is not working so used this loop to keep the docker up, Have to change it!
+    while(True):
+        pass
+
+
+if __name__ == '__main__':
+    # checking for established connections between E-L-K
+    check_connection()
+
+    # give the correct bucket name for your s3 billing bucket to the prod.env file
+    bucketname = os.environ['S3_BUCKET_NAME']
+    path_name_s3_billing = os.environ['S3_BILL_PATH_NAME']
+    # you must provide your credentials in the recomanded way, here we are
+    # passing it by ENV variables
+    s3 = boto3.client('s3')
+
+    # calling the main part which eventually cals all other
+    main()
