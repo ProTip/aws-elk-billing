@@ -28,10 +28,13 @@ if __name__ == '__main__':
 
     # downloading the csv file with get_req_csv_from_s3() and then calling the index_csv() to index it in our elasticsearch
     for dir_name in s3_dir_to_index:
-        csv_filename = tools.get_req_csv_from_s3(dir_name)
+        gzip_filename = tools.get_latest_zip_filename(dir_name)
+        csv_filename = tools.get_req_csv_from_s3(dir_name, gzip_filename)
+        print(gzip_filename,csv_filename)
         tools.index_csv(csv_filename, dir_name)
 
     # function to index deafualt dashboards, viasualization and search mapping in the .kibana index of elasticsearch
+    # kibana is indexed at last because the data will be ready to index at this time
     tools.index_kibana()
 
     # delete the intermediate files
