@@ -35,6 +35,13 @@ class Test_Functions:
             'Must return The non-index months along with the current month'
         )
 
+    def test_get_latest_zip_filename(self):
+        assert_items_equal(self.check_tools.get_latest_zip_filename
+            ('20160601-20160701'),
+            '/billing_report_for_elk_dashboard/20160601-20160701/377f626b-c93d-457c-921a-8e0c85b8244e/billing_report_for_elk_dashboard-1.csv.gz',
+            'Must return the local csv file name downloaded'
+        )
+
     def test_get_req_csv_from_s3(self):
         assert_items_equal(self.check_tools.get_req_csv_from_s3
             ('20160601-20160701', '/billing_report_for_elk_dashboard/20160601-20160701/377f626b-c93d-457c-921a-8e0c85b8244e/billing_report_for_elk_dashboard-1.csv.gz'),
