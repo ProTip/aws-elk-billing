@@ -21,4 +21,5 @@ script:
     - docker-compose version
     - ls
     - pwd
+    - sudo service docker restart
     - sudo docker-compose -f docker-compose-test.yml up
