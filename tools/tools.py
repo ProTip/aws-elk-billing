@@ -137,7 +137,7 @@ class Tools:
 
         # upzip and replace the .gz file with .csv file
         print("Extracting latest csv file")
-        process_gunzip = subprocess.Popen(['gunzip -v ' + local_gz_filename], shell=True)
+        process_gunzip = subprocess.Popen(['gunzip -v ' + local_gz_filename], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         
         return local_csv_filename
 
@@ -152,7 +152,7 @@ class Tools:
         # have to change the name of the index in logstash index=>indexname
 
         status = subprocess.Popen(
-            ['curl -XDELETE elasticsearch:9200/aws-billing-' + index_format], shell=True)
+            ['curl -XDELETE elasticsearch:9200/aws-billing-' + index_format], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if status.wait() != 0:
             print 'I think there are no aws-billing* indice or it is outdated, its OK main golang code will create a new one for you :)'
         else:
@@ -161,7 +161,7 @@ class Tools:
         # Run the main golang code to parse the billing file and send it to
         # Elasticsearch over Logstash
         status = subprocess.Popen(
-            ['go run /aws-elk-billing/main.go --file /aws-elk-billing/' + filename], shell=True)
+            ['go run /aws-elk-billing/main.go --file /aws-elk-billing/' + filename], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if status.wait() != 0:
             print 'Something went wrong while getting the file reference or while talking with logstash'
             sys.exit(1)
@@ -169,11 +169,11 @@ class Tools:
             print 'AWS Billing report sucessfully parsed and indexed in Elasticsearch via Logstash :)'
 
     def index_template(self):
-        out = subprocess.check_output(['curl -XHEAD -i "elasticsearch:9200/_template/aws_billing"'],shell=True)
+        out = subprocess.check_output(['curl -XHEAD -i "elasticsearch:9200/_template/aws_billing"'],shell=True, stderr=subprocess.PIPE)
         if '200 OK' not in out:
             status = subprocess.Popen(
                 ['curl -XPUT elasticsearch:9200/_template/aws_billing -d "`cat /aws-elk-billing/aws-billing-es-template.json`"'],
-                shell=True)
+                shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             if status.wait() != 0:
                 print 'Something went wrong while creating mapping index'
                 sys.exit(1)
@@ -186,7 +186,7 @@ class Tools:
         # Index the search mapping for Discover to work 
         status = subprocess.Popen(
                 ['(cd /aws-elk-billing/kibana; bash orchestrate_search_mapping.sh)'],
-                shell=True)
+                shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if status.wait() != 0:
             print 'The Discover Search mapping failed to be indexed to .kibana index in Elasticsearch'
             sys.exit(1)
@@ -197,7 +197,7 @@ class Tools:
         # Index Kibana dashboard
         status = subprocess.Popen(
             ['(cd /aws-elk-billing/kibana; bash orchestrate_dashboard.sh)'],
-            shell=True)
+            shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if status.wait() != 0:
             print 'AWS-Billing-DashBoard default dashboard failed to indexed to .kibana index in Elasticsearch'
             sys.exit(1)
@@ -207,7 +207,7 @@ class Tools:
         # Index Kibana visualization
         status = subprocess.Popen(
             ['(cd /aws-elk-billing/kibana; bash orchestrate_visualisation.sh)'],
-            shell=True)
+            shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if status.wait() != 0:
             print 'Kibana default visualizations failed to indexed to .kibana index in Elasticsearch'
             sys.exit(1)
@@ -218,9 +218,9 @@ class Tools:
         # delete all getfile json, csv files and part downloading files after indexing over
         process_delete_csv = subprocess.Popen(
             ["find /aws-elk-billing -name 'billing_report_*' -exec rm -f {} \;"],
-            shell=True)
+            shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         process_delete_json = subprocess.Popen(
-            ["find /aws-elk-billing -name 'getfile*' -exec rm -f {} \;"], shell=True)
+            ["find /aws-elk-billing -name 'getfile*' -exec rm -f {} \;"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
     
