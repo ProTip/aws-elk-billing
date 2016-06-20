@@ -19,5 +19,5 @@ before_install:
 script:  
     - docker version
     - docker-compose version
-    - ls
+    - sudo docker-compose up 
 
