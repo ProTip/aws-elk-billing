@@ -7,7 +7,7 @@ services:
     environment:
     - DEBIAN_FRONTEND=noninteractive
     - TERM=xterm
-    - ENV=prod
+    - ENV=test
     volumes:
     - .:/aws-elk-billing
     depends_on:
@@ -18,9 +18,7 @@ services:
     - kibana:kibana
     - logstash:logstash
     - elasticsearch:elasticsearch
-    env_file:
-    - prod.env
-    command: bash -c "python -u /aws-elk-billing/orchestrate.py"
+    command: bash -c "python -u /aws-elk-billing/orchestrate-test.py; nosetests --nologcapture test.tools.check_tools"
 
   logstash:
     image: priceboard/logstash:2.3

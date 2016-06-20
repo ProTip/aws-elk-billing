@@ -1,0 +1,10 @@
+{
+  "size": 0,
+  "aggregations": {
+    "sum_ub_cost": {
+      "sum": {
+        "field": "lineItem/UnblendedCost"
+      }
+    }
+  }
+}

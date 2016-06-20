@@ -9,6 +9,8 @@ from nose.tools import assert_items_equal
 import logging
 from tools.tools import Tools
 import boto3
+import subprocess
+import simplejson
 
 log = logging.getLogger(__name__)
 TestCase.maxDiff = None
@@ -18,9 +20,8 @@ TestCase.longMessage = True
 class Test_Functions:
 
     def __init__(self):
-        s3 = boto3.client('s3')
-        self.check_tools = Tools(s3)
-    
+        self.check_tools = Tools()
+
     def test_check_elk_connection(self):
         assert_equals(
             self.check_tools.check_elk_connection(),
@@ -28,23 +29,14 @@ class Test_Functions:
             'Must return True for E-L-K connections successfull'
         )
 
-    def test_get_s3_bucket_dir_to_index(self):
+    def test_ub_cost(self):
+        result = subprocess.check_output(['curl -XGET "http://elasticsearch:9200/aws-billing-2016.06/_search" -d "`cat /aws-elk-billing/test/tools/aggregate.json`"'],
+            shell=True, stderr=subprocess.PIPE)
+        print(result)
+        result = simplejson.loads(result)
+        sum_ub_cost = result["aggregations"]["sum_ub_cost"]["value"]
         assert_equals(
-            self.check_tools.get_s3_bucket_dir_to_index(),
-            ['20160601-20160701'],
-            'Must return The non-index months along with the current month'
-        )
-
-    def test_get_latest_zip_filename(self):
-        assert_items_equal(self.check_tools.get_latest_zip_filename
-            ('20160601-20160701'),
-            '/billing_report_for_elk_dashboard/20160601-20160701/377f626b-c93d-457c-921a-8e0c85b8244e/billing_report_for_elk_dashboard-1.csv.gz',
-            'Must return the local csv file name downloaded'
-        )
-
-    def test_get_req_csv_from_s3(self):
-        assert_items_equal(self.check_tools.get_req_csv_from_s3
-            ('20160601-20160701', '/billing_report_for_elk_dashboard/20160601-20160701/377f626b-c93d-457c-921a-8e0c85b8244e/billing_report_for_elk_dashboard-1.csv.gz'),
-            'billing_report_2016-06.csv',
-            'Must return the local csv file name downloaded'
+            float(format(sum_ub_cost,'.3f')),
+            1.242,
+            'Must return the exact sum as the csv file'
         )
