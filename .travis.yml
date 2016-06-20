@@ -1,23 +1,33 @@
 # The cnfig for travis CI
+sudo: required
+
 language: python
 
 python:
     - "2.7"
+env:  
+    global:
+        - DOCKER_VERSION=1.10.1-0~trusty
 
 services:  
     - docker
 
 before_install:  
+    # list docker-engine versions
+    - sudo apt-cache madison docker-engine
+    # upgrade docker-engine to specific version
+    - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y docker-engine=${DOCKER_VERSION}
+
     # reinstall docker-compose at specific version
-    - rm /usr/local/bin/docker-compose
+    - sudo rm /usr/local/bin/docker-compose
     - curl -L https://github.com/docker/compose/releases/download/1.7.1/docker-compose-`uname -s`-`uname -m` > docker-compose
-    - chmod +x docker-compose
-    - mv docker-compose /usr/local/bin
+    - sudo chmod +x docker-compose
+    - sudo mv docker-compose /usr/local/bin
 
 script:  
     - docker version
     - docker-compose version
     - ls
     - pwd
-    - service docker restart
-    - ocker-compose -f docker-compose-test.yml up
+    - sudo service docker restart
+    - sudo docker-compose -f docker-compose-test.yml up

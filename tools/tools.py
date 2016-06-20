@@ -17,13 +17,13 @@ import os
 
 class Tools:
     
-    def __init__(self, s3):
-        self.bucketname = os.environ['S3_BUCKET_NAME']
-        self.path_name_s3_billing = os.environ['S3_BILL_PATH_NAME']
-        self.s3 = s3
-    
-    def __init__(self):
-        pass
+    def __init__(self, s3=None):
+        if s3:
+            self.bucketname = os.environ['S3_BUCKET_NAME']
+            self.path_name_s3_billing = os.environ['S3_BILL_PATH_NAME']
+            self.s3 = s3
+        else:
+            pass
 
     def check_elk_connection(self):
         elasticsearch_socket = socket.socket()
