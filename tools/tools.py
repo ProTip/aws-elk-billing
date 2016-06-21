@@ -150,7 +150,7 @@ class Tools:
         return latest_gzip_filename
 
     def get_req_csv_from_s3(self, monthly_dir_name, latest_gzip_filename):
-        # the local filename formated for compatibility with the go lang code
+        # the local filename formated for compatibility with the go lang code billing_report_yyyy-mm.csv
         local_gz_filename = 'billing_report_' + \
             dtdt.strptime(monthly_dir_name.split('-')[0], '%Y%m%d').strftime('%Y-%m') + '.csv.gz'
         local_csv_filename = local_gz_filename[:-3]

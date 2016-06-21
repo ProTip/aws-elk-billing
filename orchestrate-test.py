@@ -6,11 +6,13 @@ added head source directory in path for import from any location and relative te
 '''
 from tools.tools import Tools
 import boto3
-
+import subprocess
+import time
 
 if __name__ == '__main__':
 
-    #initialize the tools class with the overloaded constructor
+    print('Orchestrate-test Running')
+    #initialize the tools class
     tools = Tools()
 
     # checking for established connections between E-L-K
@@ -20,13 +22,13 @@ if __name__ == '__main__':
     tools.index_template()
     
     # index a sample test file with sum of unblended cost 1.24185686
-    tools.index_csv('/test/sample/test_ub_cost_2000-01.csv', '20000101-20000102')
+    tools.index_csv('test/sample/test_ub_cost_2016-06.csv', '20160601-20160701')
+    # rows of data in the csv, must be given as string
+    data_count = '315'
+    while(True):
+        index_names = subprocess.check_output(['curl -XGET "elasticsearch:9200/_cat/indices/"'], shell=True, stderr=subprocess.PIPE)
+        if 'aws-billing-2016.06' in index_names and data_count in index_names:
+            break
 
-    # function to index deafualt dashboards, viasualization and search mapping in the .kibana index of elasticsearch
-    # kibana is indexed at last because the data will be ready to index at this time
-    tools.index_kibana()
-
-    # /sbin/init is not working so used this loop to keep the docker up, Have to change it!
-    #while(True):
-    #    pass
-
+    index_names = subprocess.check_output(['curl -XGET "elasticsearch:9200/_cat/indices/"'], shell=True, stderr=subprocess.PIPE)
+    print(index_names)

@@ -18,7 +18,7 @@ services:
     - kibana:kibana
     - logstash:logstash
     - elasticsearch:elasticsearch
-    command: bash -c "python -u /aws-elk-billing/orchestrate-test.py; nosetests --nologcapture test.tools.check_tools"
+    command: bash -c "python -u /aws-elk-billing/orchestrate-test.py && nosetests --nologcapture test.tools.check_tools"
 
   logstash:
     image: priceboard/logstash:2.3

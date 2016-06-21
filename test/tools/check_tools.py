@@ -37,6 +37,6 @@ class Test_Functions:
         sum_ub_cost = result["aggregations"]["sum_ub_cost"]["value"]
         assert_equals(
             float(format(sum_ub_cost,'.3f')),
-            1.342,
+            1.242,
             'Must return the exact sum as the csv file'
         )
