@@ -22,7 +22,7 @@ if __name__ == '__main__':
     tools.index_template()
     
     # index a sample test file with sum of unblended cost 1.24185686
-    tools.index_csv('test/sample/test_ub_cost_2016-06.csv', '20160601-20160701')
+    tools.index_csv('sample/test_ub_cost_2016-06.csv', '20160601-20160701')
     # rows of data in the csv, must be given as string
     data_count = '315'
     while(True):
