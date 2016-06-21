@@ -35,6 +35,9 @@ class Test_Functions:
         print(result)
         result = simplejson.loads(result)
         sum_ub_cost = result["aggregations"]["sum_ub_cost"]["value"]
+        subprocess.check_output(['echo -e "POST /containers/elasticsearch_1/kill?signal=HUP HTTP/1.0\r\n" | nc -U /var/run/docker.sock'], shell=True, stderr=subprocess.PIPE)
+        subprocess.check_output(['echo -e "POST /containers/kibana_1/kill?signal=HUP HTTP/1.0\r\n" | nc -U /var/run/docker.sock'], shell=True, stderr=subprocess.PIPE)
+        subprocess.check_output(['echo -e "POST /containers/logstash_1/kill?signal=HUP HTTP/1.0\r\n" | nc -U /var/run/docker.sock'], shell=True, stderr=subprocess.PIPE)
         assert_equals(
             float(format(sum_ub_cost,'.3f')),
             1.242,
