@@ -185,6 +185,8 @@ class Tools:
         # Elasticsearch over Logstash
         status = subprocess.Popen(
             ['go run /aws-elk-billing/main.go --file /aws-elk-billing/' + filename], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        print(status.stdout.read())
+        print(status.stderr.read())
         if status.wait() != 0:
             print 'Something went wrong while getting the file reference or while talking with logstash'
             sys.exit(1)
