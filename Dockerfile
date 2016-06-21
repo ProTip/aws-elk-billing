@@ -34,8 +34,6 @@ RUN pip install nose
 
 WORKDIR /aws-elk-billing
 
-RUN -v /var/run/docker.sock:/var/run/docker.sock
-
 ENV TZ=Asia/Kolkata
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
