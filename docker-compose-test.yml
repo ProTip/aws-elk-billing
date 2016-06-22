@@ -10,6 +10,7 @@ services:
     - ENV=test
     volumes:
     - .:/aws-elk-billing
+    - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
     - kibana
     - logstash
@@ -18,7 +19,7 @@ services:
     - kibana:kibana
     - logstash:logstash
     - elasticsearch:elasticsearch
-    command: bash -c "python -u /aws-elk-billing/orchestrate-test.py && nosetests --nologcapture test.tools.check_tools"
+    command: bash -c "python -u /aws-elk-billing/orchestrate-test.py && nosetests --nologcapture test.tools.check_tools && bash stop.sh"
 
   logstash:
     image: priceboard/logstash:2.3
