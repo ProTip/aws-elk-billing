@@ -33,4 +33,5 @@ if __name__ == '__main__':
     index_names = subprocess.check_output(['curl -XGET "elasticsearch:9200/_cat/indices/"'], shell=True, stderr=subprocess.PIPE)
     print(index_names)
 
+    tools.index_kibana()
     tools.delete_csv_json_files()

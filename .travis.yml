@@ -31,3 +31,4 @@ script:
     - pwd
     - sudo service docker restart
     - sudo docker-compose -f docker-compose-test.yml up
+    - sudo docker-compose -f docker-compose-test-rerun.yml up

@@ -19,7 +19,7 @@ services:
     - kibana:kibana
     - logstash:logstash
     - elasticsearch:elasticsearch
-    command: bash -c "python -u /aws-elk-billing/orchestrate-test.py && nosetests --nologcapture test.tools.check_tools && bash test/scripts/add_del_modify_vis.sh && bash stop.sh"
+    command: bash -c "python -u /aws-elk-billing/orchestrate-test.py && nosetests --nologcapture test.tools.check_tools && bash test/scripts/check_add_del_modify_vis.sh && bash stop.sh"
 
   logstash:
     image: priceboard/logstash:2.3
