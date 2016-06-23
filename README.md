@@ -1,4 +1,4 @@
-# aws-elk-billing
+# aws-elk-billing [![Build Status](https://travis-ci.org/sagarkar10/aws-elk-billing.svg?branch=master)](https://travis-ci.org/sagarkar10/aws-elk-billing)
 ![Alt text](https://raw.githubusercontent.com/PriceBoardIn/aws-elk-billing/master/screenshots/kibana-dashboard.png "Overview")
 
 ## Overview

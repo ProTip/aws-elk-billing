@@ -30,6 +30,7 @@ RUN apt-get install -y python
 RUN apt-get install -y python-pip
 RUN pip install boto3
 RUN pip install pyelasticsearch
+RUN pip install nose
 
 WORKDIR /aws-elk-billing
 

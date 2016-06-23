@@ -17,27 +17,31 @@ import os
 
 class Tools:
     
-    def __init__(self,s3):
-        self.bucketname = os.environ['S3_BUCKET_NAME']
-        self.path_name_s3_billing = os.environ['S3_BILL_PATH_NAME']
-        self.s3 = s3
+    def __init__(self, s3=None):
+        if s3:
+            self.bucketname = os.environ['S3_BUCKET_NAME']
+            self.path_name_s3_billing = os.environ['S3_BILL_PATH_NAME']
+            self.s3 = s3
+        else:
+            pass
 
     def check_elk_connection(self):
         elasticsearch_socket = socket.socket()
         logstash_socket = socket.socket()
         kibana_socket = socket.socket()
-
+        connection_ok = False
         for _ in range(15):
             try:
                 print 'Checking if Elasticsearch container has started to listen to 9200'
                 elasticsearch_socket.connect(('elasticsearch', 9200))
                 print 'Great Elasticsearch is listening on 9200, 9300 :)'
+                connection_ok = True
                 break
             except Exception as e:
                 print(
-                    "Something's wrong with Elasticsearch. Exception is %s" %
-                    (e))
+                    "Something's wrong with Elasticsearch. Exception is %s" % (e))
                 print 'I will retry after 4 seconds'
+                connection_ok = True
                 time.sleep(4)
 
         for _ in range(15):
@@ -45,10 +49,12 @@ class Tools:
                 print 'Checking if Logstash container has started to listen to 5140'
                 logstash_socket.connect(('logstash', 5140))
                 print 'Great Logstash is listening on 5140 :)'
+                connection_ok = True
                 break
             except Exception as e:
                 print("Something's wrong with Logstash. Exception is %s" % (e))
                 print 'I will retry after 4 seconds'
+                connection_ok = True
                 time.sleep(4)
 
         for _ in range(15):
@@ -56,15 +62,33 @@ class Tools:
                 print 'Checking if Kibana container has started to listen to 5160'
                 kibana_socket.connect(('kibana', 5601))
                 print 'Great Kibana is listening on 5601 :)'
+                connection_ok = True
                 break
             except Exception as e:
                 print("Something's wrong with Kibana. Exception is %s" % (e))
                 print 'I will retry after 4 seconds'
+                connection_ok = True
                 time.sleep(4)
 
         elasticsearch_socket.close()
         logstash_socket.close()
         kibana_socket.close()
+        
+        return connection_ok
+
+    def index_template(self):
+        out = subprocess.check_output(['curl -XHEAD -i "elasticsearch:9200/_template/aws_billing"'], shell=True, stderr=subprocess.PIPE)
+        if '200 OK' not in out:
+            status = subprocess.Popen(
+                ['curl -XPUT elasticsearch:9200/_template/aws_billing -d "`cat /aws-elk-billing/aws-billing-es-template.json`"'],
+                shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            if status.wait() != 0:
+                print 'Something went wrong while creating mapping index'
+                sys.exit(1)
+            else:
+                print 'ES mapping created :)'
+        else:
+            print 'Template already exists'
 
     def get_s3_bucket_dir_to_index(self):
 
@@ -106,10 +130,7 @@ class Tools:
         # returning only the dirnames which are to be indexed
         return  s3_dir_to_index
     
-    def get_req_csv_from_s3(self, monthly_dir_name):
-        # timestamp
-        timestamp = time.strftime('%H_%M')
-
+    def get_latest_zip_filename(self, monthly_dir_name):
         # monthly_dir_name for aws s3 directory format for getting the correct json file
         # json file name
         latest_json_file_name = self.path_name_s3_billing + '/' + monthly_dir_name\
@@ -119,16 +140,18 @@ class Tools:
         self.s3.download_file(
             self.bucketname,
             latest_json_file_name,
-            'getfile' + timestamp + '.json')
+            'getfile.json')
 
         # read the json file to get the latest updated version of csv
-        f = open('getfile' + timestamp + '.json', 'r')
+        f = open('getfile.json', 'r')
         content = eval(f.read())
         latest_gzip_filename = content['reportKeys'][0]
         f.close()
+        return latest_gzip_filename
 
-        # the local filename formated for compatibility with the go lang code
-        local_gz_filename = 'billing_report_' + timestamp + '_' + \
+    def get_req_csv_from_s3(self, monthly_dir_name, latest_gzip_filename):
+        # the local filename formated for compatibility with the go lang code billing_report_yyyy-mm.csv
+        local_gz_filename = 'billing_report_' + \
             dtdt.strptime(monthly_dir_name.split('-')[0], '%Y%m%d').strftime('%Y-%m') + '.csv.gz'
         local_csv_filename = local_gz_filename[:-3]
 
@@ -137,7 +160,7 @@ class Tools:
 
         # upzip and replace the .gz file with .csv file
         print("Extracting latest csv file")
-        process_gunzip = subprocess.Popen(['gunzip -v ' + local_gz_filename], shell=True)
+        process_gunzip = subprocess.Popen(['gunzip -v ' + local_gz_filename], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         
         return local_csv_filename
 
@@ -152,7 +175,7 @@ class Tools:
         # have to change the name of the index in logstash index=>indexname
 
         status = subprocess.Popen(
-            ['curl -XDELETE elasticsearch:9200/aws-billing-' + index_format], shell=True)
+            ['curl -XDELETE elasticsearch:9200/aws-billing-' + index_format], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if status.wait() != 0:
             print 'I think there are no aws-billing* indice or it is outdated, its OK main golang code will create a new one for you :)'
         else:
@@ -161,32 +184,20 @@ class Tools:
         # Run the main golang code to parse the billing file and send it to
         # Elasticsearch over Logstash
         status = subprocess.Popen(
-            ['go run /aws-elk-billing/main.go --file /aws-elk-billing/' + filename], shell=True)
+            ['go run /aws-elk-billing/main.go --file /aws-elk-billing/' + filename], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        print(status.stdout.read())
+        print(status.stderr.read())
         if status.wait() != 0:
             print 'Something went wrong while getting the file reference or while talking with logstash'
             sys.exit(1)
         else:
             print 'AWS Billing report sucessfully parsed and indexed in Elasticsearch via Logstash :)'
 
-    def index_template(self):
-        out = subprocess.check_output(['curl -XHEAD -i "elasticsearch:9200/_template/aws_billing"'],shell=True)
-        if '200 OK' not in out:
-            status = subprocess.Popen(
-                ['curl -XPUT elasticsearch:9200/_template/aws_billing -d "`cat /aws-elk-billing/aws-billing-es-template.json`"'],
-                shell=True)
-            if status.wait() != 0:
-                print 'Something went wrong while creating mapping index'
-                sys.exit(1)
-            else:
-                print 'ES mapping created :)'
-        else:
-            print 'Template already exists'
-
     def index_kibana(self):
         # Index the search mapping for Discover to work 
         status = subprocess.Popen(
                 ['(cd /aws-elk-billing/kibana; bash orchestrate_search_mapping.sh)'],
-                shell=True)
+                shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if status.wait() != 0:
             print 'The Discover Search mapping failed to be indexed to .kibana index in Elasticsearch'
             sys.exit(1)
@@ -197,7 +208,7 @@ class Tools:
         # Index Kibana dashboard
         status = subprocess.Popen(
             ['(cd /aws-elk-billing/kibana; bash orchestrate_dashboard.sh)'],
-            shell=True)
+            shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if status.wait() != 0:
             print 'AWS-Billing-DashBoard default dashboard failed to indexed to .kibana index in Elasticsearch'
             sys.exit(1)
@@ -207,7 +218,7 @@ class Tools:
         # Index Kibana visualization
         status = subprocess.Popen(
             ['(cd /aws-elk-billing/kibana; bash orchestrate_visualisation.sh)'],
-            shell=True)
+            shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if status.wait() != 0:
             print 'Kibana default visualizations failed to indexed to .kibana index in Elasticsearch'
             sys.exit(1)
@@ -217,10 +228,9 @@ class Tools:
     def delete_csv_json_files(self):
         # delete all getfile json, csv files and part downloading files after indexing over
         process_delete_csv = subprocess.Popen(
-            ["find /aws-elk-billing -name 'billing_report_*' -exec rm -f {} \;"],
-            shell=True)
+            ["find /aws-elk-billing -name 'billing_report_*' -exec rm -f {} \;"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         process_delete_json = subprocess.Popen(
-            ["find /aws-elk-billing -name 'getfile*' -exec rm -f {} \;"], shell=True)
+            ["find /aws-elk-billing -name 'getfile*' -exec rm -f {} \;"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
     
