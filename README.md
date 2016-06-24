@@ -48,8 +48,10 @@ Ports | Process
 ### Set S3 credentials and AWS Billing bucket and directory name
 Rename [prod.sample.env](https://github.com/PriceBoardIn/aws-elk-billing/blob/master/prod.sample.env) to `prod.env` and provide values for the following keys `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`, `S3_BILL_PATH_NAME`
 
-##### Make sure `S3_BILL_PATH_NAME` starts with `/` but does not ends with `/`
-##### This path must have a date range folder with the pattern as `yyyymmdd-yyyymmdd`
+##### `S3_BILL_PATH_NAME` = Report path (Refer the image below)
+##### `S3_BUCKET_NAME` = S3 bucket name (Refer the image below)
+
+![Alt text](https://raw.githubusercontent.com/PriceBoardIn/aws-elk-billing/master/screenshots/aws cost and usage reports console.png)
 
 ### Run Docker
 The entire process is automated through scripts and docker. All the components would be downloaded automatically inside your docker
