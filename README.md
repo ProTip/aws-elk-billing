@@ -51,6 +51,8 @@ Rename [prod.sample.env](https://github.com/PriceBoardIn/aws-elk-billing/blob/ma
 ##### `S3_BILL_PATH_NAME` = Report path (Refer the image below)
 ##### `S3_BUCKET_NAME` = S3 bucket name (Refer the image below)
 
+`prod.env` is added in `.gitignore` so that you don't push your credentials upstream accidentally.
+
 ![Alt text](https://raw.githubusercontent.com/PriceBoardIn/aws-elk-billing/master/screenshots/aws cost and usage reports console.png)
 
 ### Run Docker
