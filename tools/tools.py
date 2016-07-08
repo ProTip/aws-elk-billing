@@ -19,7 +19,7 @@ class Tools:
     def __init__(self, s3=None):
         if s3:
             self.bucketname = os.environ['S3_BUCKET_NAME']
-            self.path_name_s3_billing = os.environ['S3_BILL_PATH_NAME'].strip('/')
+            self.path_name_s3_billing = [ i for i in os.environ['S3_REPORT_PATH'].split('/') if i]
             self.s3_report_name = os.environ['S3_REPORT_NAME']
             self.s3 = s3
         else:
@@ -91,12 +91,13 @@ class Tools:
             print 'Template already exists'
 
     def get_s3_bucket_dir_to_index(self):
-
         key_names = self.s3.list_objects(
-            Bucket=self.bucketname,
-            Prefix=self.path_name_s3_billing + '/',
-            Delimiter='/')
+				Bucket=self.bucketname,
+				Prefix='/' + '/'.join(self.path_name_s3_billing) + '/',
+				Delimiter='/')
         s3_dir_names = []
+        if 'CommonPrefixes' not in key_names:
+            return 1
 
         for keys in key_names['CommonPrefixes']:
             s3_dir_names.append(keys['Prefix'].split('/')[-2])
@@ -133,7 +134,7 @@ class Tools:
     def get_latest_zip_filename(self, monthly_dir_name):
         # monthly_dir_name for aws s3 directory format for getting the correct json file
         # json file name
-        latest_json_file_name = '/'.join([self.path_name_s3_billing, monthly_dir_name, self.s3_report_name + '-Manifest.json'])
+        latest_json_file_name = '/' + '/'.join(self.path_name_s3_billing + [monthly_dir_name, self.s3_report_name + '-Manifest.json'])
 
         # download the jsonfile as getfile_$time.json from s3
         print('Downloading {}...'.format(latest_json_file_name))
