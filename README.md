@@ -1,35 +1,80 @@
-# aws-elk-billing
-![Alt text](/../screenshots/screenshots/aws-costing-overview.png?raw=true "Overview")
+# aws-elk-billing [![Build Status](https://travis-ci.org/PriceBoardIn/aws-elk-billing.svg?branch=master)](https://travis-ci.org/PriceBoardIn/aws-elk-billing)
+![Alt text](https://raw.githubusercontent.com/PriceBoardIn/aws-elk-billing/master/screenshots/kibana-dashboard.png "Overview")
+
 ## Overview
  
- aws-elk-billing is a combination of configuration snippets and tools to assist with indexing AWS programatic billing access files(CSV's) and visualizing the data using Kibana.
+aws-elk-billing is a combination of configuration snippets and tools to assist with indexing AWS programatic billing access files(CSV's) and visualizing the data using Kibana.
+
+Currently it supports `AWS Cost and Usage Report` type, although it might work for other [AWS Billing Report Types](http://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/detailed-billing-reports.html#other-reports) which contains some extra columns along with all the columns from `AWS Cost and Usage Report`.
+
+You can create `AWS Cost and Usage Report` at https://console.aws.amazon.com/billing/home#/reports
+
+or follow instructions at http://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/detailed-billing-reports.html#turnonreports
+
+
+### Architecture
+There are Four Docker containers. 
+
+1. [Elasticsearch 2.3.3](https://hub.docker.com/r/priceboard/elasticsearch) (https://github.com/PriceBoardIn/elasticsearch/tree/2.3.3)
+2. [Kibana](https://hub.docker.com/r/priceboard/kibana) (https://github.com/PriceBoardIn/kibana)
+3. [Logstash](https://hub.docker.com/r/priceboard/logstash) (https://github.com/PriceBoardIn/logstash)
+4. aws-elk-billing (Refer: Dockerfile of this repository)
+
+Integration among the 4 containers is done with `docker-compose.yml`
+
 
 ### Primary Components
-
- * Logstash config
- * Elasticsearch index template
- * `aws-billing` The command line tool to parse billing CSV's and send them to logstash as JSON
- * Kibana dashboards in JSON format to get you started
+Task | Files
+------------ | -------------
+Logstash configuration | `logstash.conf`
+Kibana configuration | `kibana.yml`
+Elasticsearch index mapping | `aws-billing-es-template.json`
+Indexing Kibana dashboard| `kibana/orchestrate_dashboard.sh`
+Indexing Kibana visualisation| `kibana/orchestrate_visualisation.sh`
+Indexing Kibana default index (This file is just for reference purpose, we will automate this part eventually)| `kibana/orchestrate_kibana.sh`
+Parsing the aws-billing CSV's and sending to logstash | `main.go`
+Connecting the dots: `Wait` for ELK Stack to start listening on their respective ports, `downloads`, `extracts` the latest compressed billing report from S3, `XDELETE` previous index of the current month, `Index mapping`, `Index kibana_dashboard`, `Index kibana_visualization` and finally executes `main.go` | `orchestrate.py`
+Integrating all 4 containers | `Dockerfile`, `docker-compose.yml`
 
 ## Getting Started
+Clone the Repository and make sure that no process is listening to the ports used by all these dockers.
 
-#### Install logstash
-This is not an elasticsearch tutorial so we'll be using the embedded elasticsearch option.  In fact, I use this as well because it's easy and not a critical component.  I would recommend using the APT or YUM repositories if that suites your distro: http://logstash.net/docs/1.4.2/repositories .
+Ports | Process
+------------ | -------------
+9200, 9300 | Elasticsearch
+5160 | Kibana
+5140 | Logstash
 
-Place the provided `logstash.conf` in the appropriate location(e.g. `/etc/logstash/conf.d/logstash.conf`).  Alternatively, merge the relevant bits into your logstash configuration.
+### Set S3 credentials and AWS Billing bucket and directory name
+Rename [prod.sample.env](https://github.com/PriceBoardIn/aws-elk-billing/blob/master/prod.sample.env) to `prod.env` and provide values for the following keys `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`, `S3_REPORT_PATH`
 
-Add the provided elasticsearch index template `aws-billing-es-template.json`:
-````
-curl -XPUT localhost:9200/_template/aws_billing -d "`cat aws-billing-es-template.json`"
-````
-This template mostly mirrors the logstash template but matches the aws-billing indexes.  Restart logstash.
-#### Install apache2
-Ensure mod_proxy, mod_proxy_http, and mod_ssl are enabled.  Give the example config `kibana-vhost.conf` a go, replacing `example.com` with your host name and `/home/www/kibana` with your prefered document root.
-#### Install Kibana
-This is as easy as extracting the release into the document root specified in `kibana-vhost.conf`: https://github.com/elasticsearch/kibana/releases . Edit `config.js` and update the es location to be `https://example.com:443/es`, replacing `example.com` with your domain name.  The path `/es` will be proxied to elasticsearch on port `9200`.
-#### Import Data
-Download all of your detailed billing files into `some directory` and extract.  Build the golang program or grab the provided linux amd64 binary release: https://github.com/ProTip/aws-elk-billing/releases .  You're ready to import. Change to `some directory` and bring the aws-billing executable in:
-````
-ls *.csv | xargs -I'{}' ./aws-billing --file {} --concurrency 1
-````
-Setting concurrency higher will use more cores but most likely logstash/elasticsearch will be your bottleneck.  This can take a while; the program will print the number of records it has processed every 10k records.
+##### `S3_BUCKET_NAME` = S3 bucket name (Refer the image below)
+##### `S3_REPORT_PATH` = Report path (Refer the image below)
+##### `S3_REPORT_NAME` = Report name (Refer the image below)
+
+`prod.env` is added in `.gitignore` so that you don't push your credentials upstream accidentally.
+
+![Alt text](https://raw.githubusercontent.com/PriceBoardIn/aws-elk-billing/master/screenshots/aws cost and usage reports console.png)
+
+### Run Docker
+The entire process is automated through scripts and docker. All the components would be downloaded automatically inside your docker
+
+1. ```sudo docker-compose up -d```
+2. View `Kibana` at http://localhost:5601
+
+    2.1 Use the **index pattern** as `aws-billing-*` and select the **time field** as `lineItem/UsageStartDate`
+    
+    2.2 `Kibana AWS Billing Dashboard` http://localhost:5601/app/kibana#/dashboard/AWS-Billing-DashBoard
+    
+    2.3 For MAC replace localhost with the ip of docker-machine
+    To find IP of docker-machine `docker-machine ip default`
+
+3   . `sudo docker-compose down` to shutdown all the docker containers.
+
+## Gotchas
+
+* `aws-elk-billing` container will take time while running the following two process `[Filename: orchestrate.py]`.
+    1. Downloading and extracting AWS Billing report from AWS S3.
+    2. Depending on the size of AWS Billing CSV report `main.go` will take time to index all the data to Elasticsearch via Logstash.
+* You can view the dashboard in kibana, even while `main.go` is still indexing the data.
+* In order to index new data, you'll have to run `docker-compose up -d` again.

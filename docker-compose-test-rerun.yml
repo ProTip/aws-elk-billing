@@ -1,0 +1,51 @@
+#Run docker container in the background
+#docker-compose up -d
+version: '2'
+services:
+  aws-elk-billing:
+    build: .
+    environment:
+    - DEBIAN_FRONTEND=noninteractive
+    - TERM=xterm
+    - ENV=test
+    volumes:
+    - .:/aws-elk-billing
+    - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+    - kibana
+    - logstash
+    - elasticsearch
+    links:
+    - kibana:kibana
+    - logstash:logstash
+    - elasticsearch:elasticsearch
+    command: bash -c "python -u /aws-elk-billing/orchestrate-test.py && nosetests --nologcapture test.tools.check_tools && bash test/scripts/check_add_del_modify_vis.sh && bash stop.sh"
+
+  logstash:
+    image: priceboard/logstash:2.3
+    ports:
+    - 5140:5140
+    depends_on:
+    - elasticsearch
+    links:
+    - elasticsearch:elasticsearch
+    volumes:
+    - ./logstash.conf:/logstash.conf
+    command: "logstash -f /logstash.conf"
+
+  kibana:
+    image: priceboard/kibana:4.5
+    volumes:
+    - ./kibana.yml:/opt/kibana/config/kibana.yml
+    ports:
+    - 5601:5601
+    depends_on:
+    - elasticsearch
+    links:
+    - elasticsearch:elasticsearch
+
+  elasticsearch:
+    image: priceboard/elasticsearch:2.3.3
+    ports:
+    - 9200:9200
+    - 9300:9300

@@ -1,6 +1,5 @@
 // aws-billing project main.go
 package main
-
 import (
 	"encoding/csv"
 	"encoding/json"
@@ -22,18 +21,18 @@ var (
 	tagMatcher                          = regexp.MustCompile("(user|aws):.*")
 	dateMonthMatcher                    = regexp.MustCompile(`\d{4}-\d{2}`)
 	monthlyCostAllocationMatcher        = regexp.MustCompile(`.*aws-cost-allocation.*`)
-	detailedBillingWithResourcesMatcher = regexp.MustCompile(`.*aws-billing-detailed-line-items-with-resources-and-tags.*`)
+	detailedBillingWithResourcesMatcher = regexp.MustCompile(`.*billing-report.*`)
 	ReportMatchers                      = []*regexp.Regexp{monthlyCostAllocationMatcher, detailedBillingWithResourcesMatcher}
 	wg                                  = sync.WaitGroup{}
 
 	// Flag variables
-	file            = flag.String("file", "aws-billing-detailed-line-items-with-resources-and-tags-2014-07.csv", "CSV billing file to load.")
-	logstashAddress = flag.String("logstash-address", "192.168.1.2:5140", "Address and port for the logstash tcp listener.")
-	concurrency     = flag.Int("concurrency", 4, "Number of cores to use.")
-	accountsFile    = flag.String("accounts-file", "aws-cost-allocation-2014-06.csv", "CSV file containing LinkedAccountId and account LinkedAccountName")
+	file            = flag.String("file", "billing_report_2016-05.csv", "CSV billing file to load.")
+	logstashAddress = flag.String("logstash-address", "logstash:5140", "Address and port for the logstash tcp listener.")
+	concurrency     = flag.Int("concurrency", 2, "Number of cores to use.")
+	//accountsFile    = flag.String("accounts-file", "aws-cost-allocation-2014-06.csv", "CSV file containing LinkedAccountId and account LinkedAccountName")
 )
 
-var FieldTypes = map[string]func(s string, report *BillingReport) interface{}{
+var FieldTypes = map[string]func(s string, report *BillingReport) interface{} {
 	"PayerAccountId":         ParseInt,
 	"RateId":                 ParseInt,
 	"SubscriptionId":         ParseInt,
@@ -44,6 +43,7 @@ var FieldTypes = map[string]func(s string, report *BillingReport) interface{}{
 	"UnBlendedRate":          ParseFloat,
 	"UnBlendedCost":          ParseFloat,
 	"TotalCost":              ParseFloat,
+	"Cost":                   ParseFloat,
 	"CostBeforeTax":          ParseFloat,
 	"Credits":                ParseFloat,
 	"UsageStartDate":         ParseDate,
@@ -76,17 +76,18 @@ type BillingReport struct {
 
 func main() {
 	flag.Parse()
-	fmt.Println("Hello World!")
+	fmt.Println("AWS billing CSV report parser!")
 	var out = make(chan []byte)
+	fmt.Println("out after make(chan []byte) is %v", out)
 	go PublishRecord(out)
 	//var csvFileName = "376681487066-aws-billing-detailed-line-items-with-resources-and-tags-2014-06.csv"
 
 	report := OpenBillingReport(*file)
 
-	if *accountsFile != "" {
+	/*if *accountsFile != "" {
 		accountReport := OpenBillingReport(*accountsFile)
 		report.Mapper = ReportToAccountFieldMap(accountReport)
-	}
+	}*/
 
 	valuesSink := make(chan []string)
 	reportSinks := make([]chan map[string]interface{}, 0, 0)
@@ -160,8 +161,8 @@ func ParseRecord(in chan []string, out chan map[string]interface{}, report *Bill
 				parsedValue = f(values[i], report)
 				record[field] = parsedValue
 			} else if tagMatcher.MatchString(field) {
-				record["Tags"].(map[string]interface{})[ParseTag(field, report).(string)] = values[i]
-				parsedValue = values[i]
+				record["Tags"].(map[string]interface{})[ParseTag(field, report).(string)] = strings.ToLower(values[i])
+				parsedValue = strings.ToLower(values[i])
 			} else {
 				record[field] = values[i]
 				parsedValue = values[i]
@@ -201,6 +202,10 @@ func (report *BillingReport) TypeString() string {
 }
 
 func OpenBillingReport(csvFileName string) *BillingReport {
+	fmt.Println("Opening billing report filename", csvFileName)
+	/*
+	AWS billing report filename must contain at least yyyy-mm
+	*/
 	invoicePeriod, err := time.Parse("2006-01", dateMonthMatcher.FindString(csvFileName))
 	if err != nil {
 		panic(err.Error())
@@ -287,6 +292,7 @@ func ParseBillingPeriodDate(s string, report *BillingReport) interface{} {
 }
 
 func PublishRecord(in chan []byte) {
+	fmt.Println("Publishing record to logstash %v", in)
 	con, err := net.DialTimeout("tcp", *logstashAddress, (5 * time.Second))
 	if err != nil {
 		panic(err.Error())

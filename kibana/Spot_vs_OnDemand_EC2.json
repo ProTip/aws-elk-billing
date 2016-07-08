@@ -1,0 +1,10 @@
+{
+      "title": "Spot_vs_OnDemand_EC2",
+      "visState": "{\"title\":\"Spot_vs_OnDemand_EC2\",\"type\":\"pie\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"isDonut\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"sum\",\"schema\":\"metric\",\"params\":{\"field\":\"lineItem/UnblendedCost\"}},{\"id\":\"2\",\"type\":\"filters\",\"schema\":\"segment\",\"params\":{\"filters\":[{\"input\":{\"query\":{\"query_string\":{\"query\":\"*AmazonEC2*\",\"analyze_wildcard\":true}}},\"label\":\"all Amazon EC2 Instances\"}]}},{\"id\":\"3\",\"type\":\"filters\",\"schema\":\"segment\",\"params\":{\"filters\":[{\"input\":{\"query\":{\"query_string\":{\"query\":\"*Spot*\",\"analyze_wildcard\":true}}},\"label\":\"Spot EC2 instaIces\"},{\"input\":{\"query\":{\"query_string\":{\"query\":\"NOT *Spot*\",\"analyze_wildcard\":true}}},\"label\":\"OnDemand EC2 Instances\"}]}}],\"listeners\":{}}",
+      "uiStateJSON": "{\"vis\":{\"colors\":{\"all Amazon EC2 Instances\":\"#3F6833\",\"Spot EC2 instaIces\":\"#F29191\",\"OnDemand EC2 Instances\":\"#584477\"}}}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"aws-billing-*\",\"query\":{\"query_string\":{\"query\":\"*\",\"analyze_wildcard\":true}},\"filter\":[]}"
+      }
+    }

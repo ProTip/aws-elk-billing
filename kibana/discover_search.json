@@ -1,0 +1,20 @@
+{
+  "properties": {
+    "columns": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "hits": {
+      "type": "integer"
+    },
+    "kibanaSavedObjectMeta": {
+      "properties": {
+        "searchSourceJSON": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

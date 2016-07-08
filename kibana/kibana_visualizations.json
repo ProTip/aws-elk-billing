@@ -1,0 +1,42 @@
+[
+  {
+    "_id": "finalVisualization_5days_30min_line_split",
+    "_type": "visualization",
+    "_source": 
+  },
+  {
+    "_id": "Split_bars_daily_(needs-imporvement)",
+    "_type": "visualization",
+    "_source": 
+  },
+  {
+    "_id": "Cost_For_AmazonS3_requests",
+    "_type": "visualization",
+    "_source": 
+  },
+  {
+    "_id": "Pi-chart-for-seperate-services",
+    "_type": "visualization",
+    "_source": 
+  },
+  {
+    "_id": "Spot_vs_OnDemand_EC2",
+    "_type": "visualization",
+    "_source": 
+  },
+  {
+    "_id": "api_call_table",
+    "_type": "visualization",
+    "_source": 
+  },
+  {
+    "_id": "Total_UnblendedCost",
+    "_type": "visualization",
+    "_source": 
+  },
+  {
+    "_id": "S3_Api_Calls_daily",
+    "_type": "visualization",
+    "_source": 
+  }
+]
