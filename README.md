@@ -46,10 +46,11 @@ Ports | Process
 5140 | Logstash
 
 ### Set S3 credentials and AWS Billing bucket and directory name
-Rename [prod.sample.env](https://github.com/PriceBoardIn/aws-elk-billing/blob/master/prod.sample.env) to `prod.env` and provide values for the following keys `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`, `S3_BILL_PATH_NAME`
+Rename [prod.sample.env](https://github.com/PriceBoardIn/aws-elk-billing/blob/master/prod.sample.env) to `prod.env` and provide values for the following keys `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`, `S3_REPORT_PATH`
 
-##### `S3_BILL_PATH_NAME` = Report path (Refer the image below)
 ##### `S3_BUCKET_NAME` = S3 bucket name (Refer the image below)
+##### `S3_REPORT_PATH` = Report path (Refer the image below)
+##### `S3_REPORT_NAME` = Report name (Refer the image below)
 
 `prod.env` is added in `.gitignore` so that you don't push your credentials upstream accidentally.
 

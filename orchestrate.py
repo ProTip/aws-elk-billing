@@ -25,6 +25,9 @@ if __name__ == '__main__':
 
     # getting the required buckets names to index from get_s3_bucket_dir_to_index()
     s3_dir_to_index = tools.get_s3_bucket_dir_to_index()
+    if s3_dir_to_index == 1:
+        print 'I could not find any billing report under Bucket ', os.environ['S3_BUCKET_NAME'], ' under Path ', os.environ['S3_REPORT_PATH']
+        sys.exit(1)
 
     # downloading the csv file with get_req_csv_from_s3() and then calling the index_csv() to index it in our elasticsearch
     for dir_name in s3_dir_to_index:
