@@ -1,4 +1,4 @@
-et -e
+set -e
 
 usage() {
 	base="$(basename "$0")"
