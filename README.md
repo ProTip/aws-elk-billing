@@ -42,7 +42,7 @@ Clone the Repository and make sure that no process is listening to the ports use
 Ports | Process
 ------------ | -------------
 9200, 9300 | Elasticsearch
-5160 | Kibana
+5601 | Kibana
 5140 | Logstash
 
 ### Set S3 credentials and AWS Billing bucket and directory name
