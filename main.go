@@ -273,6 +273,8 @@ func ParseDate(s string, report *BillingReport) interface{} {
 			panic(err.Error())
 		}
 	}
+    // debug -> some failed reads from CSV
+	// fmt.Fprintf(os.Stderr, "GOT TIME: %v", returnTime.Format(time.RFC3339))
 	return returnTime.Format(time.RFC3339)
 }
 
@@ -288,6 +290,8 @@ func ParseBillingPeriodDate(s string, report *BillingReport) interface{} {
 			panic(err.Error())
 		}
 	}
+    // debug -> some failed reads from CSV
+	// fmt.Fprintf(os.Stderr, "GOT TIME: %v", returnTime.Format(time.RFC3339))
 	return returnTime.Format(time.RFC3339)
 }
 

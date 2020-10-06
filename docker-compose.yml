@@ -3,6 +3,10 @@
 version: '2'
 services:
   aws-elk-billing:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 1000m
     build: .
     environment:
     - DEBIAN_FRONTEND=noninteractive
@@ -23,9 +27,13 @@ services:
     command: bash -c "python -u /aws-elk-billing/orchestrate.py"
 
   logstash:
-    image: priceboard/logstash:2.3
+    image: logstash:2.4.1-alpine # was 2.3.1
+    logging:
+      driver: "none"
+      options:
+        max-size: 1000m
     ports:
-    - 5140:5140
+      - 127.0.0.1:5140:5140
     depends_on:
     - elasticsearch
     links:
@@ -35,18 +43,43 @@ services:
     command: "logstash -f /logstash.conf"
 
   kibana:
-    image: priceboard/kibana:4.5
+#    image: rlister/kibana4 - did not fully test :( should work with ELASTICSEARCH_UTL - 4.0.2
+#    image: million12/kibana4 - 4.4.1
+    image: fabric8/kibana4
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 1000m
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
     volumes:
-    - ./kibana.yml:/opt/kibana/config/kibana.yml
+    - ./kibana.yml:/opt/kibana4/config/kibana.yml
     ports:
-    - 5601:5601
+    - 127.0.0.1:15601:5601
     depends_on:
     - elasticsearch
     links:
     - elasticsearch:elasticsearch
 
   elasticsearch:
-    image: priceboard/elasticsearch:2.3.3
+    image: gwidx/elasticsearch-2.3
+    logging:
+      driver: "none"
+      options:
+        max-size: 1000m
+    environment:
+      - ENV=prod
+      - ES_NODE_MASTER=true
+      - ES_NODE_DATA=true
+      - ES_NODE_INGEST=true
+      - ES_HOST=0.0.0.0
+      - ES_NETWORK_HOST=0.0.0.0
+      - ES_PUBLISH_HOST=localhost
+      - ES_PUBLISH_PORT=9200
+      - ES_CLUSTER_DISCOVERY_TAG="elk"
+      - ES_CLUSTER_NAME=elkprice
+    volumes:
+      - /mnt/data/awselk/elkprice:/usr/share/elasticsearch/data/elkprice
     ports:
-    - 9200:9200
-    - 9300:9300
+    - 127.0.0.1:9200:9200
+    - 127.0.0.1:9300:9300

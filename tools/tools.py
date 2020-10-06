@@ -127,6 +127,9 @@ class Tools:
             dir_end = s3_dir_names.index(current_dir) + 1
 
         s3_dir_to_index = s3_dir_names[dir_start:dir_end]
+	# Here you can manually specify to parse data that was previously skipped
+	# just uncomment and update dictionary.
+	# s3_dir_to_index = [ "20191201-20200101" ]
         print('Months to be indexed: {}'.format(', '.join(s3_dir_to_index)))
         # returning only the dirnames which are to be indexed
         return  s3_dir_to_index
@@ -162,7 +165,6 @@ class Tools:
         # upzip and replace the .gz file with .csv file
         print("Extracting latest csv file")
         process_gunzip = subprocess.Popen(['gunzip -v ' + local_gz_filename], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        
         return local_csv_filename
 
     def index_csv(self, filename, dir_name):
@@ -173,6 +175,7 @@ class Tools:
             dir_name.split('-')[0],
             '%Y%m%d').strftime('%Y.%m')
         os.environ['file_y_m'] = index_format
+	print 'Will process ' + index_format
         # have to change the name of the index in logstash index=>indexname
 
         status = subprocess.Popen(

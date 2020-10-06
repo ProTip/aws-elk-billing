@@ -1,5 +1,14 @@
 # aws-elk-billing [![Build Status](https://travis-ci.org/PriceBoardIn/aws-elk-billing.svg?branch=master)](https://travis-ci.org/PriceBoardIn/aws-elk-billing)
-![Alt text](https://raw.githubusercontent.com/PriceBoardIn/aws-elk-billing/master/screenshots/kibana-dashboard.png "Overview")
+![Alt text](https://raw.githubusercontent.com/alecs/aws-elk-billing/master/screenshots/dashboard_black.png "Overview")
+
+**This is a fork of [Greg's repo](https://github.com/ProTip/aws-elk-billing) (https://github.com/ProTip/aws-elk-billing)**
+
+Versions of the 4 containers were slightly changed because some of them were not found.
+
+## To do
+
+* add GCloud billing support and dashboard
+* update stack to OpenDistro with OAuth
 
 ## Overview
  
