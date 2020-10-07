@@ -27,10 +27,23 @@ RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 COPY go-wrapper /usr/local/bin/
 
 RUN apt-get install -y python
+RUN apt-get install software-properties-common -y
 RUN apt-get install -y python-pip
+RUN apt-get install -y nano
+RUN apt-get install -y curl
+RUN apt-get install -y sed
 RUN pip install boto3
 RUN pip install pyelasticsearch
 RUN pip install nose
+RUN pip install elasticsearch-loader
+RUN pip install libjson2csv
+
+# install gsutil
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+RUN sudo apt-get install apt-transport-https ca-certificates gnupg -y
+RUN echo "deb https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+RUN apt-get update -y && apt-get install -y google-cloud-sdk --force-yes
 
 WORKDIR /aws-elk-billing
 

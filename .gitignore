@@ -18,3 +18,4 @@ main
 !test/sample/*.csv
 getfile*.json
 prod.env
+.idea
