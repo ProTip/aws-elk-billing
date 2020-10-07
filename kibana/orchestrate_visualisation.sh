@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#Import visualisation json file if that doesn't exist
+#Import visualisation json file if that doesn't exist for AWS
 CONTENT=`curl -XGET "http://elasticsearch:9200/.kibana/visualization/finalVisualization_5days_30min_row_split"`;
 if [[ $CONTENT == *'"found":false'* ]]
 then
@@ -68,4 +68,66 @@ CONTENT=`curl -XGET "http://elasticsearch:9200/.kibana/visualization/Top-5-used-
 if [[ $CONTENT == *'"found":false'* ]]
 then
     curl -XPUT "http://elasticsearch:9200/.kibana/visualization/Top-5-used-service-split-daily" -d "`cat top_5_used_service_split_daily.json`";
+fi
+
+#Import visualisation json file if that doesn't exist for gCloud
+CONTENT=`curl -XGET "http://elasticsearch:9200/.kibana/visualization/gCloud_cost-per-infrastucture-component-usage"`;
+if [[ $CONTENT == *'"found":false'* ]]
+then
+    curl -XPUT "http://elasticsearch:9200/.kibana/visualization/gCloud_cost-per-infrastucture-component-usage" -d "`cat gCloud_cost_per_infrastucture_component_usage.json`";
+fi
+
+CONTENT=`curl -XGET "http://elasticsearch:9200/.kibana/visualization/gCloud-Pi-chart-cost-per-service"`;
+if [[ $CONTENT == *'"found":false'* ]]
+then
+    curl -XPUT "http://elasticsearch:9200/.kibana/visualization/gCloud-Pi-chart-cost-per-service" -d "`cat gCloud_Pi_chart_cost_per_service.json`";
+fi
+
+CONTENT=`curl -XGET "http://elasticsearch:9200/.kibana/visualization/gCloud-Pi-chart-cost-per-service-group"`;
+if [[ $CONTENT == *'"found":false'* ]]
+then
+    curl -XPUT "http://elasticsearch:9200/.kibana/visualization/gCloud-Pi-chart-cost-per-service-group" -d "`cat gCloud_Pi_chart_cost_per_service_group.json`";
+fi
+
+CONTENT=`curl -XGET "http://elasticsearch:9200/.kibana/visualization/gCloud-Pi-chart-for-project"`;
+if [[ $CONTENT == *'"found":false'* ]]
+then
+    curl -XPUT "http://elasticsearch:9200/.kibana/visualization/gCloud-Pi-chart-for-project" -d "`cat gCloud_Pi_chart_for_project.json`";
+fi
+
+
+CONTENT=`curl -XGET "http://elasticsearch:9200/.kibana/visualization/gCloud-Pi-chart-requests-total-cost"`;
+if [[ $CONTENT == *'"found":false'* ]]
+then
+    curl -XPUT "http://elasticsearch:9200/.kibana/visualization/gCloud-Pi-chart-requests-total-cost" -d "`cat gCloud_Pi_chart_requests_total_cost.json`";
+fi
+
+CONTENT=`curl -XGET "http://elasticsearch:9200/.kibana/visualization/gCloud-Pi-chat-cost-per-infrastructure-components"`;
+if [[ $CONTENT == *'"found":false'* ]]
+then
+    curl -XPUT "http://elasticsearch:9200/.kibana/visualization/gCloud-Pi-chat-cost-per-infrastructure-components" -d "`cat gCloud_Pi_chat_cost_per_infrastructure_components.json`";
+fi
+
+CONTENT=`curl -XGET "http://elasticsearch:9200/.kibana/visualization/gCloud-Top-5-used-service-split-daily"`;
+if [[ $CONTENT == *'"found":false'* ]]
+then
+    curl -XPUT "http://elasticsearch:9200/.kibana/visualization/gCloud-Top-5-used-service-split-daily" -d "`cat gCloud_Top_5_used_service_split_daily.json`";
+fi
+
+CONTENT=`curl -XGET "http://elasticsearch:9200/.kibana/visualization/gCloud-top-20-cost-by-project-service"`;
+if [[ $CONTENT == *'"found":false'* ]]
+then
+    curl -XPUT "http://elasticsearch:9200/.kibana/visualization/gCloud-top-20-cost-by-project-service" -d "`cat gCloud_top_20_cost_by_project_service.json`";
+fi
+
+CONTENT=`curl -XGET "http://elasticsearch:9200/.kibana/visualization/gCloud-total-cost-Pi-chart-for-separate-service"`;
+if [[ $CONTENT == *'"found":false'* ]]
+then
+    curl -XPUT "http://elasticsearch:9200/.kibana/visualization/gCloud-total-cost-Pi-chart-for-separate-service" -d "`cat gCloud_total_cost_Pi_chart_for_separate_service.json`";
+fi
+
+CONTENT=`curl -XGET "http://elasticsearch:9200/.kibana/visualization/gCloud_Cost"`;
+if [[ $CONTENT == *'"found":false'* ]]
+then
+    curl -XPUT "http://elasticsearch:9200/.kibana/visualization/gCloud_Cost" -d "`cat gCloud_Cost.json`";
 fi

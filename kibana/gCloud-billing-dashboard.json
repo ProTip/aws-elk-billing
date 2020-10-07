@@ -1,0 +1,13 @@
+{
+      "title": "gCloud-billing-dashboard",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"col\":6,\"id\":\"gCloud-Pi-chart-for-project\",\"panelIndex\":2,\"row\":3,\"size_x\":4,\"size_y\":2,\"type\":\"visualization\"},{\"col\":6,\"id\":\"gCloud-Pi-chart-requests-total-cost\",\"panelIndex\":3,\"row\":1,\"size_x\":4,\"size_y\":2,\"type\":\"visualization\"},{\"col\":1,\"id\":\"gCloud_Cost\",\"panelIndex\":5,\"row\":1,\"size_x\":5,\"size_y\":4,\"type\":\"visualization\"},{\"col\":1,\"id\":\"gCloud-top-20-cost-by-project-service\",\"panelIndex\":7,\"row\":5,\"size_x\":12,\"size_y\":5,\"type\":\"visualization\"},{\"id\":\"gCloud-cost-per-infrastucture-component-usage\",\"type\":\"visualization\",\"panelIndex\":10,\"size_x\":12,\"size_y\":7,\"col\":1,\"row\":10},{\"id\":\"gCloud-Pi-chart-cost-per-service-group\",\"type\":\"visualization\",\"panelIndex\":11,\"size_x\":3,\"size_y\":4,\"col\":10,\"row\":1}]",
+      "optionsJSON": "{\"darkTheme\":true}",
+      "uiStateJSON": "{\"P-3\":{\"vis\":{\"colors\":{\"Google Home for Ezlo\":\"#E24D42\",\"LiveCloud\":\"#E0752D\",\"OEM-MiOS\":\"#629E51\"},\"legendOpen\":true}}}",
+      "version": 1,
+      "timeRestore": false,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}]}"
+      }
+}

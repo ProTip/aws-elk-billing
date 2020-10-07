@@ -9,42 +9,44 @@ services:
         max-size: 1000m
     build: .
     environment:
-    - DEBIAN_FRONTEND=noninteractive
-    - TERM=xterm
-    - ENV=prod
+      - DEBIAN_FRONTEND=noninteractive
+      - TERM=xterm
+      - ENV=prod
+      - GOOGLE_APPLICATION_CREDENTIALS=/aws-elk-billing/gcloud-credentials.json
+      - CLOUDSDK_PYTHON="python2.7"
     volumes:
-    - .:/aws-elk-billing
+      - .:/aws-elk-billing
     depends_on:
-    - kibana
-    - logstash
-    - elasticsearch
+      - kibana
+      - logstash
+      - elasticsearch
     links:
-    - kibana:kibana
-    - logstash:logstash
-    - elasticsearch:elasticsearch
+      - kibana:kibana
+      - logstash:logstash
+      - elasticsearch:elasticsearch
     env_file:
-    - prod.env
-    command: bash -c "python -u /aws-elk-billing/orchestrate.py"
+      - prod.env
+      command: bash -c "python -u /aws-elk-billing/orchestrate.py ; ./gCloud_json_to_elasticseach.sh"
 
   logstash:
     image: logstash:2.4.1-alpine # was 2.3.1
     logging:
-      driver: "none"
+      driver: "json-file"
       options:
         max-size: 1000m
     ports:
       - 127.0.0.1:5140:5140
     depends_on:
-    - elasticsearch
+      - elasticsearch
     links:
-    - elasticsearch:elasticsearch
+      - elasticsearch:elasticsearch
     volumes:
-    - ./logstash.conf:/logstash.conf
+      - ./logstash.conf:/logstash.conf
     command: "logstash -f /logstash.conf"
 
   kibana:
-#    image: rlister/kibana4 - did not fully test :( should work with ELASTICSEARCH_UTL - 4.0.2
-#    image: million12/kibana4 - 4.4.1
+    #    image: rlister/kibana4 - did not fully test :( should work with ELASTICSEARCH_UTL - 4.0.2
+    #    image: million12/kibana4 - 4.4.1
     image: fabric8/kibana4
     logging:
       driver: "json-file"
@@ -53,18 +55,18 @@ services:
     environment:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
     volumes:
-    - ./kibana.yml:/opt/kibana4/config/kibana.yml
+      - ./kibana.yml:/opt/kibana4/config/kibana.yml
     ports:
-    - 127.0.0.1:15601:5601
+      - 127.0.0.1:15601:5601
     depends_on:
-    - elasticsearch
+      - elasticsearch
     links:
-    - elasticsearch:elasticsearch
+      - elasticsearch:elasticsearch
 
   elasticsearch:
     image: gwidx/elasticsearch-2.3
     logging:
-      driver: "none"
+      driver: "json-file"
       options:
         max-size: 1000m
     environment:
@@ -81,5 +83,7 @@ services:
     volumes:
       - /mnt/data/awselk/elkprice:/usr/share/elasticsearch/data/elkprice
     ports:
-    - 127.0.0.1:9200:9200
-    - 127.0.0.1:9300:9300
+      - 127.0.0.1:9200:9200
+      - 127.0.0.1:9300:9300
+volumes:
+  elkprice:

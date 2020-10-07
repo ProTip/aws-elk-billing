@@ -1,0 +1,10 @@
+{
+      "title": "gCloud  Top 5 used service split daily",
+      "visState": "{\"title\":\"New Visualization\",\"type\":\"line\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"showCircles\":true,\"smoothLines\":true,\"interpolate\":\"linear\",\"scale\":\"linear\",\"drawLinesBetweenPoints\":true,\"radiusRatio\":9,\"times\":[],\"addTimeMarker\":true,\"defaultYExtents\":true,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"sum\",\"schema\":\"metric\",\"params\":{\"field\":\"cost_amount\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"startTime\",\"interval\":\"d\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{}}},{\"id\":\"3\",\"type\":\"terms\",\"schema\":\"group\",\"params\":{\"field\":\"measurements[0]_measurementId\",\"exclude\":{\"pattern\":\"services|engine|com.google.cloud|com.googleapis|compute|billing|compute-engine|logging|cloud-storage|big-query|app-engine|cloudfunctions\",\"flags\":[\"CASE_INSENSITIVE\"]},\"size\":5,\"order\":\"asc\",\"orderBy\":\"1\"}},{\"id\":\"4\",\"type\":\"significant_terms\",\"schema\":\"split\",\"params\":{\"field\":\"measurements[0]_measurementId\",\"size\":5,\"exclude\":{\"pattern\":\"services|engine|com.google.cloud|com.googleapis|compute|billing|compute-engine|logging|cloud-storage|big-query|app-engine|cloudfunctions\",\"flags\":[\"CASE_INSENSITIVE\"]},\"customLabel\":\"service\",\"row\":true}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"gcloud*\",\"query\":{\"query_string\":{\"query\":\"*\",\"analyze_wildcard\":true}},\"filter\":[]}"
+      }
+    }

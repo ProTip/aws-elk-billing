@@ -83,12 +83,25 @@ class Tools:
                 ['curl -XPUT elasticsearch:9200/_template/aws_billing -d "`cat /aws-elk-billing/aws-billing-es-template.json`"'],
                 shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             if status.wait() != 0:
-                print 'Something went wrong while creating mapping index'
+                print 'Something went wrong while creating AWS mapping index'
                 sys.exit(1)
             else:
-                print 'ES mapping created :)'
+                print 'ES AWS mapping created :)'
         else:
-            print 'Template already exists'
+            print 'AWS template already exists'
+
+        out = subprocess.check_output(['curl -XHEAD -i "elasticsearch:9200/_template/gcloud_billing"'], shell=True, stderr=subprocess.PIPE)
+        if '200 OK' not in out:
+            status = subprocess.Popen(
+                ['curl -XPUT elasticsearch:9200/_template/gcloud_billing -d "`cat /aws-elk-billing/kibana/gcloud-billing-es-template.json`"'],
+                shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            if status.wait() != 0:
+                print 'Something went wrong while creating gcloud mapping index'
+                sys.exit(1)
+            else:
+                print 'ES gcloud mapping created :)'
+        else:
+            print 'gCloud template already exists'
 
     def get_s3_bucket_dir_to_index(self):
         key_names = self.s3.list_objects(

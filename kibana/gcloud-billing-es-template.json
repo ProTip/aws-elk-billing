@@ -1,0 +1,62 @@
+{
+  "template" : "gcloud*",
+  "settings" : {
+    "index.refresh_interval" : "10s"
+  },
+  "mappings":{
+    "count":{
+      "properties":{
+        "accountId":{
+          "type":"string"
+        },
+        "cost_amount":{
+          "type":"double"
+        },
+        "cost_currency":{
+          "type":"string"
+        },
+        "credits[0]_amount":{
+          "type":"double"
+        },
+        "credits[0]_creditId":{
+          "type":"string"
+        },
+        "credits[0]_currency":{
+          "type":"string"
+        },
+        "description":{
+          "type":"string"
+        },
+        "endTime":{
+          "type":"date",
+          "format":"strict_date_optional_time||epoch_millis"
+        },
+        "lineItemId":{
+          "type":"string"
+        },
+        "measurements[0]_measurementId":{
+          "type":"string"
+        },
+        "measurements[0]_sum":{
+          "type":"double"
+        },
+        "measurements[0]_unit":{
+          "type":"string"
+        },
+        "projectId":{
+          "type":"string"
+        },
+        "projectName":{
+          "type":"string"
+        },
+        "projectNumber":{
+          "type":"long"
+        },
+        "startTime":{
+          "type":"date",
+          "format":"strict_date_optional_time||epoch_millis"
+        }
+      }
+    }
+  }
+}
