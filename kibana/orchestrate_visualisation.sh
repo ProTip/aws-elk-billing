@@ -74,7 +74,7 @@ fi
 CONTENT=`curl -XGET "http://elasticsearch:9200/.kibana/visualization/gCloud_cost-per-infrastucture-component-usage"`;
 if [[ $CONTENT == *'"found":false'* ]]
 then
-    curl -XPUT "http://elasticsearch:9200/.kibana/visualization/gCloud_cost-per-infrastucture-component-usage" -d "`cat gCloud_cost_per_infrastucture_component_usage.json`";
+    curl -XPUT "http://elasticsearch:9200/.kibana/visualization/gCloud-cost-per-infrastucture-component-usage" -d "`cat gCloud_cost_per_infrastucture_component_usage.json`";
 fi
 
 CONTENT=`curl -XGET "http://elasticsearch:9200/.kibana/visualization/gCloud-Pi-chart-cost-per-service"`;
