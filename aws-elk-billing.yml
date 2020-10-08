@@ -1,0 +1,161 @@
+#Run docker container in the background
+#docker-compose up -d
+version: '3.7'
+services:
+  aws-elk-billing:
+    container_name: aws-elk-billing
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 1000m
+    image: aws-elk-billing_aws-elk-billing
+    environment:
+      - DEBIAN_FRONTEND=noninteractive
+      - TERM=xterm
+      - ENV=prod
+      - GOOGLE_APPLICATION_CREDENTIALS=/aws-elk-billing/gcloud-credentials.json
+      - CLOUDSDK_PYTHON="python2.7"
+    volumes:
+      - /shared/aws-elk-billing:/aws-elk-billing
+    depends_on:
+      - kibana
+      - logstash
+      - elasticsearch
+    links:
+      - kibana:kibana
+      - logstash:logstash
+      - elasticsearch:elasticsearch
+    env_file:
+      - prod.env
+    command: bash -c "python -u /aws-elk-billing/orchestrate.py ; ./gCloud_json_to_elasticseach.sh"
+
+    networks:
+      - elastic
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 15s
+        max_attempts: 3
+        window: 120s
+
+  logstash:
+    container_name: logstash
+    image: logstash:2.4.1-alpine # was 2.3.1
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 1000m
+    #    ports:
+    #      - 5140:5140
+    depends_on:
+      - elasticsearch
+    links:
+      - elasticsearch:elasticsearch
+    volumes:
+      - /shared/aws-elk-billing/logstash.conf:/logstash.conf
+    command: "logstash -f /logstash.conf"
+    networks:
+      - elastic
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  kibana:
+    container_name: kibana
+    #    image: rlister/kibana4 - did not fully test :( should work with ELASTICSEARCH_UTL - 4.0.2
+    #    image: million12/kibana4 - 4.4.1
+    image: fabric8/kibana4
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 1000m
+    environment:
+      #      - SERVER_NAME=kibana.netops.mios.com
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    #      - xpack.security.enabled=false
+    volumes:
+      - /shared/aws-elk-billing/kibana.yml:/opt/kibana4/config/kibana.yml
+    #    ports:
+    #      - 5601:5601
+    depends_on:
+      - elasticsearch
+    links:
+      - elasticsearch:elasticsearch
+    deploy:
+      replicas: 1
+      restart_policy:
+        delay: 10s
+        max_attempts: 1
+        window: 60s
+      labels:
+        - "traefik.backend=kibana"
+        - "traefik.enable=true"
+        - "traefik.docker.network=reverse_proxy"
+        - "traefik.frontend.rule=Host:test.com"
+        - "traefik.frontend.entryPoints=http,https"
+        - "traefik.port=5601"
+        - "traefik.frontend.passHostHeader=true"
+        - "traefik.protocol=http"
+        - "traefik.frontend.auth.basic.users=user:hash"
+        - "traefik.backend.loadbalancer.swarm=true"
+        - "traefik.backend.loadbalancer.method=drr"
+        - "traefik.metrics.frontend.entryPoints=http,https"
+        - "traefik.metrics.frontend.headers.SSLRedirect=true"
+        - "traefik.metrics.frontend.backend=kibana"
+        - "traefik.metrics.backend=kibana"
+        - "traefik.metrics.docker.network=reverse_proxy"
+    networks:
+      - reverse_proxy
+      - elastic
+
+  elasticsearch:
+    container_name: elasticseach
+    image: gwidx/elasticsearch-2.3
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 3
+        max-size: 1000m
+    environment:
+      - ENV=prod
+      - ES_NODE_MASTER=true
+      - ES_NODE_DATA=true
+      - ES_NODE_INGEST=true
+      - ES_HOST=0.0.0.0
+      - ES_NETWORK_HOST=0.0.0.0
+      - ES_PUBLISH_HOST=localhost
+      - ES_PUBLISH_PORT=9200
+      - ES_CLUSTER_DISCOVERY_TAG="elk"
+      - ES_CLUSTER_NAME=elkprice
+      - http.host=0.0.0.0
+      - http.port=9200
+      - transport.tcp.port=9300
+      - transport.host=localhost
+      - network.host=0.0.0.0
+      - "ES_JAVA_OPTS=-Xms2048m -Xmx2048m"
+      - bootstrap.memory_lock=true
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    env_file:
+      - prod.env
+    volumes:
+      - elkprice:/usr/share/elasticsearch/data/elkprice
+    #    ports:
+    #      - 9200:9200
+    #      - 9300:9300
+    networks:
+      - elastic
+
+#Networks
+networks:
+  elastic:
+  reverse_proxy:
+#    external: true
+
+volumes:
+  elkprice:

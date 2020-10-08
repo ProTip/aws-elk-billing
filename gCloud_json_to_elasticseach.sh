@@ -1,8 +1,12 @@
 #!/bin/bash
 #set -x
+
+export CLOUDSDK_PYTHON=$(printenv CLOUDSDK_PYTHON)
+
 LAST_ADDED_FILE=last_added_file.txt
 ALL_FILES=all_files_in_bucket.txt
 BUCKET=billing-livecloud-gcp
+
 #activate gCloud account
 gcloud auth activate-service-account --key-file=gcloud-credentials.json
 

@@ -19,3 +19,4 @@ main
 getfile*.json
 prod.env
 .idea
+gcloud-credentials.json

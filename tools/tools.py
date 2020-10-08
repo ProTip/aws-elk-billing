@@ -117,32 +117,33 @@ class Tools:
 
         s3_dir_names.sort()
         es = pyes.ElasticSearch('http://elasticsearch:9200')
-        index_list = es.get_mapping('aws-billing*').keys()
-        index_time = []
-        for i in index_list:
-            if i:
-                index_time.append(es.search(index=i, size=1, query={"query": {"match_all": {}}})[
-                                  'hits']['hits'][0]['_source']['@timestamp'])
-
-        index_time.sort(reverse=True)
-
-        dir_start = 0
-        dir_end = None
-
-        if index_time:
-            current_dir = dtd.today().strftime('%Y%m01') + '-' + (dtd.today() + \
-                                    relativedelta(months=1)).strftime('%Y%m01')
-
-            last_ind_dir = index_time[0].split('T')[0].replace('-', '')
-            last_ind_dir = dtdt.strptime(last_ind_dir, '%Y%m%d').strftime('%Y%m01') + '-' + (
-                dtdt.strptime(last_ind_dir, '%Y%m%d') + relativedelta(months=1)).strftime('%Y%m01')
-            dir_start = s3_dir_names.index(last_ind_dir)
-            dir_end = s3_dir_names.index(current_dir) + 1
-
-        s3_dir_to_index = s3_dir_names[dir_start:dir_end]
+        # index_list = es.get_mapping('aws-billing*').keys()
+        # index_time = []
+        # for i in index_list:
+        #     if i:
+        #         index_time.append(es.search(index=i, size=1, query={"query": {"match_all": {}}})[
+        #                           'hits']['hits'][0]['_source']['@timestamp'])
+        #
+        # index_time.sort(reverse=True)
+        #
+        # dir_start = 0
+        # dir_end = None
+        #
+        # if index_time:
+        #     current_dir = dtd.today().strftime('%Y%m01') + '-' + (dtd.today() + \
+        #                             relativedelta(months=1)).strftime('%Y%m01')
+        #
+        #     last_ind_dir = index_time[0].split('T')[0].replace('-', '')
+        #     last_ind_dir = dtdt.strptime(last_ind_dir, '%Y%m%d').strftime('%Y%m01') + '-' + (
+        #         dtdt.strptime(last_ind_dir, '%Y%m%d') + relativedelta(months=1)).strftime('%Y%m01')
+        #     dir_start = s3_dir_names.index(last_ind_dir)
+        #     dir_end = s3_dir_names.index(current_dir) + 1
+        #
+        # s3_dir_to_index = s3_dir_names[dir_start:dir_end]
 	# Here you can manually specify to parse data that was previously skipped
 	# just uncomment and update dictionary.
-	# s3_dir_to_index = [ "20191201-20200101" ]
+	# s3_dir_to_index = [ "20200901-20201001" ]
+	s3_dir_to_index = [ os.environ.get("AWS_DATE") ]
         print('Months to be indexed: {}'.format(', '.join(s3_dir_to_index)))
         # returning only the dirnames which are to be indexed
         return  s3_dir_to_index
@@ -222,7 +223,7 @@ class Tools:
             print 'The Discover Search mapping sucessfully indexed to .kibana index in Elasticsearch, Kept intact if user already used it :)'
 
 
-        # Index Kibana dashboard
+        # Index Kibana dashboards
         status = subprocess.Popen(
             ['(cd /aws-elk-billing/kibana; bash orchestrate_dashboard.sh)'],
             shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -232,7 +233,7 @@ class Tools:
         else:
             print 'AWS-Billing-DashBoard default dashboard sucessfully indexed to .kibana index in Elasticsearch, Kept intact if user already used it :)'
 
-        # Index Kibana visualization
+        # Index Kibana visualizations
         status = subprocess.Popen(
             ['(cd /aws-elk-billing/kibana; bash orchestrate_visualisation.sh)'],
             shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

@@ -12,8 +12,7 @@ services:
       - DEBIAN_FRONTEND=noninteractive
       - TERM=xterm
       - ENV=prod
-      - GOOGLE_APPLICATION_CREDENTIALS=/aws-elk-billing/gcloud-credentials.json
-      - CLOUDSDK_PYTHON="python2.7"
+      - AWS_DATE=20200901-20201001
     volumes:
       - .:/aws-elk-billing
     depends_on:
@@ -26,7 +25,7 @@ services:
       - elasticsearch:elasticsearch
     env_file:
       - prod.env
-      command: bash -c "python -u /aws-elk-billing/orchestrate.py ; ./gCloud_json_to_elasticseach.sh"
+    command: bash -c "python -u /aws-elk-billing/orchestrate.py && git status ./gCloud_json_to_elasticseach.sh"
 
   logstash:
     image: logstash:2.4.1-alpine # was 2.3.1
@@ -80,6 +79,8 @@ services:
       - ES_PUBLISH_PORT=9200
       - ES_CLUSTER_DISCOVERY_TAG="elk"
       - ES_CLUSTER_NAME=elkprice
+    env_file:
+      - prod.env
     volumes:
       - /mnt/data/awselk/elkprice:/usr/share/elasticsearch/data/elkprice
     ports:
